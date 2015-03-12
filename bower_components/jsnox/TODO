@@ -1,0 +1,37 @@
+√ npm publish
+√ main implementation (class & tagname)
+√ support for attributes
+√ make className join both props and tagspec
+√ type, eg 'input:number'
+√ license
+√ make props arg optional
+√ sane defaults (button type=button)
+√ install for non-CJS case?
+√ document accepted strings
+√ memoize str->obj function? (see memoize branch)
+√ more react docs (new PR)
+√ throw on invalid inputs (option to disable this?)
+√ travisCI
+√ fix spec representation (no deleting tagName, etc)
+√ clean up readme text
+√ fix readme image legibility
+√ travis badge
+√ '@' shorthand for refs?
+√ add tests for ref shorthand (@)
+√ throw error if more than 3 args given (forgotten array literal)
+√ tests
+    √ data attributes (see https://github.com/facebook/react/issues/1134)
+* 1.0.0
+
+## Later
+* some kind of classset integration?
+* react-router integration?
+* d.if(cond).then(...regular args...)   --> returns null if cond is falsy
+* side-by-side page (React.DOM/jsx/jsnox)
+
+## Promotion
+√ add to https://github.com/facebook/react/wiki/Complementary-Tools
+√ IRC
+√ /r/javascript
+√ jsweekly and/or dailyjs
+* see https://hacks.mozilla.org/2013/05/how-to-spread-the-word-about-your-code/
