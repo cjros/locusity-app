@@ -27,7 +27,7 @@
    //  message: function(m) {
    //      console.log(m)
    //  }
-});
+// });
 
 
 			Backbone.history.start();
