@@ -1,4 +1,4 @@
-@mixin gridify($col, $width, $gutter: 2) {
+@mixin gridify($col, $width, $gutter: 0) {
     @media only screen and (min-width: #{$width}#{"px"}){
         .grid-#{$col}-#{$width} {
             & > * {
