@@ -77,11 +77,13 @@
  $mainTextColor: whitesmoke;
  $mainFont: 'Montserrat', sans-serif;
  $secFont: 'Oxygen', sans-serif;
+ $shadow: 0px 1px 5px #777;
 
 body {
     transition: opacity .25s ease;
 }
 .left-content {
+    z-index: 2;
     position: relative;
     text-align: center;
     font-family: $secFont;
@@ -93,6 +95,7 @@ body {
     animation: slideFromLeft 1s ease;
 }
 .right-content {
+    z-index: 1;
     position: relative;
     animation: slideFromRight 1s ease;
     background-color: whitesmoke;
@@ -102,6 +105,7 @@ body {
     padding-top: 3em;
     
     & > * {
+        text-shadow: 0px 1px 2px #777;
         font-family: $mainFont;
         color: $mainTextColor;
         animation: slideDown 1s ease;
@@ -126,6 +130,47 @@ nav {
             font-size: medium;
             margin: 0 auto;
         }
+    }
+}
+
+.form-wrapper {
+    min-height: 100vh;
+    & > * {
+        text-align: center;
+        transform: translateY(200%);
+        & > input[type=text] {
+            box-shadow: $shadow;
+            border: 3px solid $mainColor;
+            color: $mainColor;
+            font-family: $mainFont;
+            font-size: 2em;
+            text-align: center;
+            background-color: transparent;
+        }
+        & > button {
+            border: 1px solid $mainColor;
+            font-family: 'Oxygen', sans-serif;
+            font-weight: bold;
+            font-size: 2em;
+            margin: .2em;
+            background-color: $mainColor;
+            color: white;
+            box-shadow: $shadow;
+        }
+    }
+}
+
+//jquery classes
+.disappear {
+    animation: fadeOut .75s ease both;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
     }
 }
 

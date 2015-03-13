@@ -6,8 +6,29 @@
 			this.left = document.querySelector('.left-content');
 			this.right = document.querySelector('.right-content');
 
-			this.stuff = z(Backbone.FixedSide);
-			React.render(this.stuff, this.left);
+			this.infoSide = z(Backbone.FixedSide);
+			this.chatSide = z(Backbone.ChooseUserName);
+			React.render(this.infoSide, this.left);
+			React.render(this.chatSide, this.right);
+
+			// var pubnub = PUBNUB.init({
+	  //           publish_key: 'insert-here',
+	  //           subscribe_key: 'insert-here'
+   //       	});			
+
+			// pubnub.time(
+			//     function(time) {
+			//         console.log(time)
+			//     }
+			// );
+
+			// pubnub.subscribe({
+   //  channel: 'my_channel',
+   //  message: function(m) {
+   //      console.log(m)
+   //  }
+});
+
 
 			Backbone.history.start();
 		},
@@ -70,13 +91,26 @@
 		}
 	});
 
-	/*main view for the RIGHT side*/
-	Backbone.ChatRoom = React.createClass({
-		displayName: 'ChatRoom',
+	Backbone.ChooseUserName = React.createClass({
+		displayName: 'ChooseUserName',
+		_getUserName: function(e) {
+			e.preventDefault();
+			var name = React.findDOMNode(this.refs.username).value;
+			var form = document.querySelector('.username');
+			// alert('hello ' + name + "!");
+			// $('.username').addClass('disappear');
+			$('.username').hide();
+		},
 		render: function() {
-			return 
+			return z('div.form-wrapper', [
+				z('form.username', {onSubmit: this._getUserName}, [
+					//need to regex
+					z('input:text[required][placeholder=Choose a Username]@username'),
+					z('button', 'START!')
+				])
+			])
 		}
-	});
+	})
 
 	
 

@@ -40,6 +40,8 @@ function app(){
         // start app?
 
         new Backbone.LocusityRouter();
+
+        
     })
 
 }
