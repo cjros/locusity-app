@@ -142,16 +142,15 @@ nav {
             box-shadow: $shadow;
             border: 3px solid $mainColor;
             color: $mainColor;
-            font-family: $mainFont;
+            font-family: $secFont;
             font-size: 2em;
             text-align: center;
             background-color: transparent;
         }
         & > button {
             border: 1px solid $mainColor;
-            font-family: 'Oxygen', sans-serif;
-            font-weight: bold;
-            font-size: 2em;
+            font-family: $secFont;
+            font-size: 1.6em !important;
             margin: .2em;
             background-color: $mainColor;
             color: white;
