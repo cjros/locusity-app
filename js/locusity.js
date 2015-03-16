@@ -4,6 +4,7 @@
 	Backbone.LocusityRouter = Backbone.Router.extend({
 		initialize: function() {
 			var self = this;
+			$('#map').hide();
 			this.left = document.querySelector('.left-content');
 			this.right = document.querySelector('.right-content');
 			this.username = document.querySelector('.username');
@@ -16,18 +17,7 @@
 			React.render(this.infoSide, this.left);
 			// React.render(this.chatSide, this.right);
 
-			this.getLocation().then(function(d) {
-				this.point = d
-				console.log(this.point)
-				this.collection = new Backbone.Meetups()
-				this.collection.latitude = this.point.latitude;
-				this.collection.longitude = this.point.longitude;
-				// debugger;
-				this.collection.fetch().then(function() {
-					this.chatSide = z(Backbone.ChooseUserName);
-					React.render(this.chatSide, this.username);
-				}.bind(this))
-			}.bind(this))
+			
 
 
 			/*var pubnub = PUBNUB.init({
@@ -55,13 +45,56 @@
 			'*default': 'home'
 		},
 		home: function() {
+			$('#map').hide();
+			$('.meetups').hide();
 			console.log('this is the home route');
+			this.getLocation().then(function(d) {
+				this.point = d
+				console.log(this.point)
+				this.collection = new Backbone.Meetups()
+				this.collection.latitude = this.point.latitude;
+				this.collection.longitude = this.point.longitude;
+				// debugger;
+				this.collection.fetch().then(function() {
+					this.chatSide = z(Backbone.ChooseUserName);
+					React.render(this.chatSide, this.username);
+				}.bind(this))
+			}.bind(this))
 		},
 		chatroom: function() {
 			//configure a block so they can't come straight here UNLESS they have a session already
+			console.log(this.collection)
+			
 			this.meetupView = z(Backbone.MeetupsView, {collection: this.collection});
 			React.render(this.meetupView, this.meetups);
 			$('.meetups').show()
+			$('#map').show();
+			var self = this;
+			this.meetMap = new GMaps({
+				el: '#map',
+				lat: this.collection.latitude,
+				lng: this.collection.longitude,
+				zoom: 9
+			})
+			this.collection.models.map(function(d, i, a) {
+				// debugger;
+
+				if(d.get('venue')) {
+					this.lat = d.get('venue').lat;
+					this.lng = d.get('venue').lon;
+
+					this.meetMap.addMarker({
+						lat: this.lat,
+						lng: this.lng,
+						title: 'Hi',
+						infoWindow: {
+							content: '<p>' + 'Hi' + '</p>'
+						}
+					})
+				} else {
+					return true;
+				}
+			}.bind(this))
 		},
 		getLocation: function() {
 			var deferred = new $.Deferred()
@@ -148,7 +181,6 @@
 		}
 	});
 
-	/*main view for the LEFT side*/
 	Backbone.FixedSide = React.createClass({
 		displayName: 'FixedSide',
 		render: function() {
@@ -179,6 +211,7 @@
 			// $('.username').addClass('disappear');
 			$('.username').hide();
 			window.location.hash = '#chat'
+			return name;
 		},
 		render: function() {
 			return z('div.form-wrapper', [
@@ -193,31 +226,30 @@
 
 	Backbone.MeetupsView = React.createClass({
 		displayName: 'MeetupsView',
-		// getInitialState: function() {
-  //           return {}
-  //       },
-  //       getDefaultProps: function() {
-  //           return {
-  //               collection: null
-  //           };
-  //       },
-  //       componentWillMount: function() { //what happens when the object is attached to the dom similar to initialize
-  //           var self = this;
-  //           this.props.collection && this.props.collection.on("change reset add remove", function() {
-  //               self.forceUpdate() //setup listener and then force update on collection change
-  //           })
-  //       },
 		render: function() {
 			console.log(this.props);
 			// debugger;
 			var each = this.props.collection.models;
 			return z('div.meets', 
 				each.map(function(data) {
-					return z('div.meetupinstance', {key: data.get('id')}, data.get('id'))
+					return z('div.'+data.get('id'), [
+						z('div.meetName', data.get('name')),
+						z('div.rsvp', data.get('yes_rsvp_count')),
+						z('div.when', new Date(data.get('time'))),
+						z('div.desc', data.get('description')),
+						z('a[href='+data.get('event_url')+']', 'MORE INFO HERE')
+					])
 				})
 			)
 		}
 	})
+
+	// Backbone.Map = React.createClass({
+	// 	displayName: 'Map',
+	// 	render: function() {
+	// 		return z('div.map-w')
+	// 	}
+	// })
 
 
 })(typeof module === 'object' ? module.exports: window);

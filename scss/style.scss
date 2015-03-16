@@ -82,6 +82,9 @@
 body {
     transition: opacity .25s ease;
 }
+.main {
+    max-height: 100vh;
+}
 .left-content {
     z-index: 2;
     position: relative;
@@ -96,10 +99,13 @@ body {
 }
 .right-content {
     z-index: 1;
-    position: relative;
     animation: slideFromRight 1s ease;
+    position: relative;
+    
     background-color: whitesmoke;
-    min-height: 100vh;
+    overflow-y: scroll;
+    height: 100vh;
+
 }
 .title {
     padding-top: 3em;
@@ -157,6 +163,28 @@ nav {
             box-shadow: $shadow;
         }
     }
+}
+.meetups {
+    max-height: 300px;
+    overflow-y: scroll;
+
+}
+.meets {
+    & > * {
+        margin: 1em;
+      padding: .5em;
+      border: 5px solid white;
+      box-shadow: $shadow;
+    }
+}
+
+#map {
+    height: 400px;
+      max-width: 100%;
+      padding: 1em;
+      border: 7px solid white;
+      margin: 1em;
+      box-shadow: 0px 1px 20px #777;
 }
 
 //jquery classes
