@@ -4,8 +4,7 @@
 	Backbone.LocusityRouter = Backbone.Router.extend({
 		initialize: function() {
 			var self = this;
-			this.isUser = localStorage.getItem('username')
-			//might have to create a promise before it does anything
+			this.updateUser();
 
 			$('#map').hide();
 			this.left = document.querySelector('.left-content');
@@ -47,61 +46,46 @@
 			'chat': 'chatroom',
 			'*default': 'home'
 		},
+		updateUser: function(){
+			this.isUser = localStorage.getItem('username')
+		},
 		home: function() {
-			
+			this.updateUser()
 			$('#map').hide();
 			$('.meetups').hide();
 			console.log('this is the home route');
 			this.collectionExists.then(function(data) {
-
 				if (this.isUser) {
 					this.navigate('#chat', {trigger: true});
-					return false;
 				} else {
 					console.log(data)
 					this.chatSide = z(Backbone.ChooseUserName);
 					React.render(this.chatSide, this.username);
-					return true;
 				}
 				
 			}.bind(this))
 			
 		},
 		chatroom: function() {
-			//configure a block so that they can't come straight here UNLESS they have a session (basically a username) already
-
-			//PROBLEM: when going straight to this page from URL or on a refresh, if username already exists and they try to go back home, 
-			//the 'choose username' input is still available. we don't want that.
-
-			//maybe, we can use a router navigate trigger that if they try to go home with a session, it'll automatically take them back HERE.
-			//-create logic that checks if they have a localstorage session, use the username that they have and open chatroom
-			//--show a message when routing back to home that says they already have a username (if they want a new one, delete cookies)
-			
+			this.updateUser()
 			if (!this.isUser) {
-				console.log(this.isUser)
-				this.navigate('#home', {trigger: true});
-				return false;
+				console.log('if no username, input should come up')
+				this.navigate('#home', {trigger: true, replace: true});
 			} else {
 				this.collectionExists.then(function(data) {
-						console.log(data)
-						// console.log(this.collection)
 					
 						this.meetupView = z(Backbone.MeetupsView, {collection: this.collection});
-						React.render(this.meetupView, this.meetups);
 
 						$('.meetups').show()
 						$('#map').show();
 
 						this.getGoogleMap();
+						React.render(this.meetupView, this.meetups);
 
 
-						// debugger;
 				}.bind(this))
-				return true;
 			}
 
-			
-			
 		},
 		getGoogleMap: function() {
 			//probably create a cache for this whole map?
@@ -151,7 +135,7 @@
 		// 	return ['https://api.meetup.com/2/event/',
 		// 	this.collection.id,
 		// 	'?&sign=true&format=json&photo-host=public&page=1&',
-		// 	'key=INSERTHERE'].join('');
+		// 	'key=INSERT'].join('');
 		// }
 	});
 
@@ -163,14 +147,14 @@
 			'&topic=javascript,coding,ruby&',
 			'lon='+ this.longitude,
 			'&time=,2w&radius=35&page=10&',
-			'key=INSERTHERE'].join('')
+			'key=INSERT'].join('')
 			// return ['https://jsonp.nodejitsu.com/?url=https%3A%2F%2Fapi.meetup.com',
 			// '%2F2%2Fopen_events%3F%26sign%3Dtrue%26format%3Djson%26photo-host%3Dpublic%',
 			// '26lat%3D',this.latitude,
 			// '%26topic%3Djavascript%2Ccoding%2Cruby%26',
 			// 'lon%3D',this.longitude,
 			// '%26time%3D%2C2w%26radius%3D35%26page%3D10%26',
-			// 'key%3DINSERTHERE'].join('');
+			// 'key%3DINSERT'].join('');
 		},
 		parse: function(data) {
 			return data.results;
@@ -240,20 +224,17 @@
 			this.fillUser = $.Deferred()
 			this.fillUser.resolve(sessionName)
 
-			
-
 			this.fillUser.then(function() {
-				console.log(arguments)
 				$('.username').hide();
 				window.location.hash = '#chat'
-			})
+			}.bind(this))
 		},
 		render: function() {
 			return z('div.form-wrapper', [
 				z('form.username', {onSubmit: this._getUserName}, [
 					//need to regex
-					z('input:text[required][placeholder=Choose a Username]@username'),
-					z('button', 'START!')
+					z('input:text[required][placeholder=Choose a Username]@username')
+					// z('button', 'START!')
 				])
 			])
 		}
