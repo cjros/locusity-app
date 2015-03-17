@@ -4,39 +4,42 @@
 	Backbone.LocusityRouter = Backbone.Router.extend({
 		initialize: function() {
 			var self = this;
+			this.isUser = localStorage.getItem('username')
+			//might have to create a promise before it does anything
+
 			$('#map').hide();
 			this.left = document.querySelector('.left-content');
 			this.right = document.querySelector('.right-content');
 			this.username = document.querySelector('.username');
 			this.meetups = document.querySelector('.meetups');
-			// this.point;
 
 
 			this.infoSide = z(Backbone.FixedSide);
-			// this.chatSide = z(Backbone.ChooseUserName);
 			React.render(this.infoSide, this.left);
-			// React.render(this.chatSide, this.right);
 
 			
+			this.collectionExists = $.Deferred();
+			this.getLocation().then(function(d) {
+				this.point = d
+				console.log(this.point)
+				this.collection = new Backbone.Meetups()
+				this.collection.latitude = this.point.latitude;
+				this.collection.longitude = this.point.longitude;
+				
+				// debugger;
+				this.collection.fetch().then(function(data) {
+					this.collectionExists.resolve(this.collection);
+					console.log('testing for user')
+					console.log('this is the username' + this.isUser);
 
-
-			/*var pubnub = PUBNUB.init({
-	            publish_key: 'insert-here',
-	            subscribe_key: 'insert-here'
-         	});			
-
-			pubnub.time(
-			    function(time) {
-			        console.log(time)
-			    }
-			);
-
-			pubnub.subscribe({
-			    channel: 'my_channel',
-			    message: function(m) {
-			        console.log(m)
-			    }
-			});*/
+					// if (this.isUser) {
+					// 	this.navigate('#chat', {trigger: true});
+					// } else {
+					// 	return;
+					// }
+					
+				}.bind(this))
+			}.bind(this))
 
 			Backbone.history.start();
 		},
@@ -45,37 +48,70 @@
 			'*default': 'home'
 		},
 		home: function() {
+			
 			$('#map').hide();
 			$('.meetups').hide();
 			console.log('this is the home route');
-			this.getLocation().then(function(d) {
-				this.point = d
-				console.log(this.point)
-				this.collection = new Backbone.Meetups()
-				this.collection.latitude = this.point.latitude;
-				this.collection.longitude = this.point.longitude;
-				// debugger;
-				this.collection.fetch().then(function() {
+			this.collectionExists.then(function(data) {
+
+				if (this.isUser) {
+					this.navigate('#chat', {trigger: true});
+					return false;
+				} else {
+					console.log(data)
 					this.chatSide = z(Backbone.ChooseUserName);
 					React.render(this.chatSide, this.username);
-				}.bind(this))
+					return true;
+				}
+				
 			}.bind(this))
+			
 		},
 		chatroom: function() {
-			//configure a block so they can't come straight here UNLESS they have a session already
-			console.log(this.collection)
+			//configure a block so that they can't come straight here UNLESS they have a session (basically a username) already
+
+			//PROBLEM: when going straight to this page from URL or on a refresh, if username already exists and they try to go back home, 
+			//the 'choose username' input is still available. we don't want that.
+
+			//maybe, we can use a router navigate trigger that if they try to go home with a session, it'll automatically take them back HERE.
+			//-create logic that checks if they have a localstorage session, use the username that they have and open chatroom
+			//--show a message when routing back to home that says they already have a username (if they want a new one, delete cookies)
 			
-			this.meetupView = z(Backbone.MeetupsView, {collection: this.collection});
-			React.render(this.meetupView, this.meetups);
-			$('.meetups').show()
-			$('#map').show();
-			var self = this;
+			if (!this.isUser) {
+				console.log(this.isUser)
+				this.navigate('#home', {trigger: true});
+				return false;
+			} else {
+				this.collectionExists.then(function(data) {
+						console.log(data)
+						// console.log(this.collection)
+					
+						this.meetupView = z(Backbone.MeetupsView, {collection: this.collection});
+						React.render(this.meetupView, this.meetups);
+
+						$('.meetups').show()
+						$('#map').show();
+
+						this.getGoogleMap();
+
+
+						// debugger;
+				}.bind(this))
+				return true;
+			}
+
+			
+			
+		},
+		getGoogleMap: function() {
+			//probably create a cache for this whole map?
 			this.meetMap = new GMaps({
-				el: '#map',
-				lat: this.collection.latitude,
-				lng: this.collection.longitude,
-				zoom: 9
+					el: '#map',
+					lat: this.collection.latitude,
+					lng: this.collection.longitude,
+					zoom: 9
 			})
+
 			this.collection.models.map(function(d, i, a) {
 				// debugger;
 
@@ -97,9 +133,8 @@
 			}.bind(this))
 		},
 		getLocation: function() {
-			var deferred = new $.Deferred()
+			var deferred = $.Deferred()
 			function success(pos) {
-				// console.log(pos.coords.latitude + ", " + pos.coords.longitude);
 				deferred.resolve({latitude: pos.coords.latitude, longitude: pos.coords.longitude});
 			}
 			function fail(error) {
@@ -116,26 +151,26 @@
 		// 	return ['https://api.meetup.com/2/event/',
 		// 	this.collection.id,
 		// 	'?&sign=true&format=json&photo-host=public&page=1&',
-		// 	'key=INSERT-HERE'].join('');
+		// 	'key=INSERTHERE'].join('');
 		// }
 	});
 
 	Backbone.Meetups = Backbone.Collection.extend({
 		model: Backbone.aMeetup,
 		url: function() {
-			// return ['https://api.meetup.com/2/open_events?&sign=true&format=json&photo-host=public&',
-			// 'lat='+ this.latitude,
-			// '&topic=javascript,coding,ruby&',
-			// 'lon='+ this.longitude,
-			// '&time=,2w&radius=35&page=10&',
-			// 'key=INSERT-HERE'].join('')
-			return ['https://jsonp.nodejitsu.com/?url=https%3A%2F%2Fapi.meetup.com',
-			'%2F2%2Fopen_events%3F%26sign%3Dtrue%26format%3Djson%26photo-host%3Dpublic%',
-			'26lat%3D',this.latitude,
-			'%26topic%3Djavascript%2Ccoding%2Cruby%26',
-			'lon%3D',this.longitude,
-			'%26time%3D%2C2w%26radius%3D35%26page%3D10%26',
-			'key%3DINSERT-HERE'].join('');
+			return ['https://api.meetup.com/2/open_events.json?callback=?&sign=true&photo-host=public&',
+			'lat='+ this.latitude,
+			'&topic=javascript,coding,ruby&',
+			'lon='+ this.longitude,
+			'&time=,2w&radius=35&page=10&',
+			'key=INSERTHERE'].join('')
+			// return ['https://jsonp.nodejitsu.com/?url=https%3A%2F%2Fapi.meetup.com',
+			// '%2F2%2Fopen_events%3F%26sign%3Dtrue%26format%3Djson%26photo-host%3Dpublic%',
+			// '26lat%3D',this.latitude,
+			// '%26topic%3Djavascript%2Ccoding%2Cruby%26',
+			// 'lon%3D',this.longitude,
+			// '%26time%3D%2C2w%26radius%3D35%26page%3D10%26',
+			// 'key%3DINSERTHERE'].join('');
 		},
 		parse: function(data) {
 			return data.results;
@@ -192,26 +227,26 @@
 		}
 	});
 
-	Backbone.ContentSide = React.createClass({
-		displayName: 'ContentSide',
-		render: function() {
-			return z('div.content-side', [
-				z(Backbone.ChooseUserName),
-				/* Meetup API stuff here */])
-		}
-	})
-
 	Backbone.ChooseUserName = React.createClass({
 		displayName: 'ChooseUserName',
 		_getUserName: function(e) {
 			e.preventDefault();
 			var name = React.findDOMNode(this.refs.username).value; //might need to store this username within the 'global' Backbone
 			var form = document.querySelector('.username'); 
-			// alert('hello ' + name + "!");
 			// $('.username').addClass('disappear');
-			$('.username').hide();
-			window.location.hash = '#chat'
-			return name;
+
+			var sessionName = localStorage.setItem('username', name)
+
+			this.fillUser = $.Deferred()
+			this.fillUser.resolve(sessionName)
+
+			
+
+			this.fillUser.then(function() {
+				console.log(arguments)
+				$('.username').hide();
+				window.location.hash = '#chat'
+			})
 		},
 		render: function() {
 			return z('div.form-wrapper', [
@@ -229,6 +264,11 @@
 		render: function() {
 			console.log(this.props);
 			// debugger;
+
+			// <p> content </p> = z('p', content)
+			// tags without /
+			// tags with /
+			// <tag> grouping </tag>
 			var each = this.props.collection.models;
 			return z('div.meets', 
 				each.map(function(data) {
@@ -236,20 +276,13 @@
 						z('div.meetName', data.get('name')),
 						z('div.rsvp', data.get('yes_rsvp_count')),
 						z('div.when', new Date(data.get('time'))),
-						z('div.desc', data.get('description')),
+						z('div.desc', [data.get('description')]),
 						z('a[href='+data.get('event_url')+']', 'MORE INFO HERE')
 					])
 				})
 			)
 		}
 	})
-
-	// Backbone.Map = React.createClass({
-	// 	displayName: 'Map',
-	// 	render: function() {
-	// 		return z('div.map-w')
-	// 	}
-	// })
 
 
 })(typeof module === 'object' ? module.exports: window);

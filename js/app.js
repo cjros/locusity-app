@@ -42,6 +42,24 @@ function app(){
 
         new Backbone.LocusityRouter();
 
+        /*var pubnub = PUBNUB.init({
+                publish_key: 'insert-here',
+                subscribe_key: 'insert-here'
+            });         
+
+            pubnub.time(
+                function(time) {
+                    console.log(time)
+                }
+            );
+
+            pubnub.subscribe({
+                channel: 'my_channel',
+                message: function(m) {
+                    console.log(m)
+                }
+        });*/
+
         
     })
 
