@@ -25,17 +25,10 @@
 				this.collection.latitude = this.point.latitude;
 				this.collection.longitude = this.point.longitude;
 				
-				// debugger;
 				this.collection.fetch().then(function(data) {
 					this.collectionExists.resolve(this.collection);
 					console.log('testing for user')
-					console.log('this is the username' + this.isUser);
-
-					// if (this.isUser) {
-					// 	this.navigate('#chat', {trigger: true});
-					// } else {
-					// 	return;
-					// }
+					console.log('this is the username: ' + this.isUser);
 					
 				}.bind(this))
 			}.bind(this))
@@ -49,8 +42,37 @@
 		updateUser: function(){
 			this.isUser = localStorage.getItem('username')
 		},
+		runPubNub: function() {
+			console.log(this)
+			this.pubnub = PUBNUB.init({
+                publish_key: 'pub-c-28310c24-9919-4f88-9bc3-817089853ade',
+				subscribe_key: 'sub-c-db7a32e2-c8ea-11e4-9356-02ee2ddab7fe',
+	        });         
+
+            this.pubnub.time(
+                function(time) {
+                    console.log(time)
+                }
+            );
+
+            this.pubnub.subscribe({
+                channel: 'locusity',
+                message: function(m) {
+                    console.log(m)
+            	}
+		    });
+
+		    this.pubnub.publish({
+		    	channel: 'locusity',
+		    	message: {'color': 'blue'}
+		    });
+
+		    document.querySelector('.core').innerHTML = this.pubnub.supplant(
+		    	'Testing if this works CORE DIV: "{channel}" and "{message}"', {channel: this.pubnub.channel, message: this.pubnub.message})
+		},
 		home: function() {
 			this.updateUser()
+
 			$('#map').hide();
 			$('.meetups').hide();
 			console.log('this is the home route');
@@ -82,6 +104,8 @@
 						this.getGoogleMap();
 						React.render(this.meetupView, this.meetups);
 
+						//starting a pubnub chatroom instance;
+						this.runPubNub();
 
 				}.bind(this))
 			}
@@ -93,7 +117,7 @@
 					el: '#map',
 					lat: this.collection.latitude,
 					lng: this.collection.longitude,
-					zoom: 9
+					zoom: 10
 			})
 
 			this.collection.models.map(function(d, i, a) {
@@ -135,7 +159,7 @@
 		// 	return ['https://api.meetup.com/2/event/',
 		// 	this.collection.id,
 		// 	'?&sign=true&format=json&photo-host=public&page=1&',
-		// 	'key=INSERT'].join('');
+		// 	'key=2963568336371205b3948793023157b'].join('');
 		// }
 	});
 
@@ -147,14 +171,7 @@
 			'&topic=javascript,coding,ruby&',
 			'lon='+ this.longitude,
 			'&time=,2w&radius=35&page=10&',
-			'key=INSERT'].join('')
-			// return ['https://jsonp.nodejitsu.com/?url=https%3A%2F%2Fapi.meetup.com',
-			// '%2F2%2Fopen_events%3F%26sign%3Dtrue%26format%3Djson%26photo-host%3Dpublic%',
-			// '26lat%3D',this.latitude,
-			// '%26topic%3Djavascript%2Ccoding%2Cruby%26',
-			// 'lon%3D',this.longitude,
-			// '%26time%3D%2C2w%26radius%3D35%26page%3D10%26',
-			// 'key%3DINSERT'].join('');
+			'key=2963568336371205b3948793023157b'].join('')
 		},
 		parse: function(data) {
 			return data.results;

@@ -26,7 +26,7 @@ function app(){
         {url: "./bower_components/jsnox/jsnox.js"},
 
         // other stuff
-        {url: "./bower_components/pace/pace.min.js"},
+        // {url: "./bower_components/pace/pace.min.js"},
         {url: "./js/gmaps.js"},
         {url: "./bower_components/pubnub/web/pubnub.min.js"},
         {url: "./js/locusity.js"}
@@ -41,24 +41,6 @@ function app(){
         // start app?
 
         new Backbone.LocusityRouter();
-
-        /*var pubnub = PUBNUB.init({
-                publish_key: 'insert-here',
-                subscribe_key: 'insert-here'
-            });         
-
-            pubnub.time(
-                function(time) {
-                    console.log(time)
-                }
-            );
-
-            pubnub.subscribe({
-                channel: 'my_channel',
-                message: function(m) {
-                    console.log(m)
-                }
-        });*/
 
         
     })
