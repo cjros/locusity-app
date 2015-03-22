@@ -11,6 +11,7 @@
 			this.right = document.querySelector('.right-content');
 			this.username = document.querySelector('.username');
 			this.meetups = document.querySelector('.meetups');
+			this.actions = document.querySelector('.actions');
 
 
 			this.infoSide = z(Backbone.FixedSide);
@@ -43,32 +44,67 @@
 			this.isUser = localStorage.getItem('username')
 		},
 		runPubNub: function() {
-			console.log(this)
+			// console.log(this)
+			// var self = this;
+			// Backbone.bind('chatting', function(data){
+			// 	console.log(data.chat)
+			// 	self.pubnub.chat_text = data.chat;
+			// })
+			this.updateUser();
+			console.log(this.point.latitude);
+
 			this.pubnub = PUBNUB.init({
                 publish_key: 'pub-c-28310c24-9919-4f88-9bc3-817089853ade',
 				subscribe_key: 'sub-c-db7a32e2-c8ea-11e4-9356-02ee2ddab7fe',
-	        });         
+	        });
 
-            this.pubnub.time(
+	        this.pubnub.time(
                 function(time) {
                     console.log(time)
                 }
             );
 
-            this.pubnub.subscribe({
-                channel: 'locusity',
-                message: function(m) {
-                    console.log(m)
-            	}
-		    });
+	        function chatRange(coord, resolution) {
+		        var rez = Math.pow( 10, resolution || 0 );
+		        return Math.floor(coord * rez) / rez;
+		    }
 
-		    this.pubnub.publish({
-		    	channel: 'locusity',
-		    	message: {'color': 'blue'}
-		    });
+		    function safe_text(text) {
+                return ('' + text).replace(/[<>]/g, '');
+            }
 
-		    document.querySelector('.core').innerHTML = this.pubnub.supplant(
-		    	'Testing if this works CORE DIV: "{channel}" and "{message}"', {channel: this.pubnub.channel, message: this.pubnub.message})
+            function showMessage(text) {
+            	update.innerHTML = safe_text(text) + '<br>' + update.innerHTML;
+            }
+
+            function receive(data) {
+            	showMessage(data)
+            }
+
+			var username = this.isUser,
+				chatbox = this.pubnub.$('.username-box'),
+				update = document.querySelector('.core'),
+				channel = 'locusity',
+				chatarea = chatRange(this.point.latitude, 1) + '' + chatRange(this.point.longitude, 1);
+
+				console.log(username)
+				
+				this.pubnub.subscribe({
+	                channel: chatarea,
+	                message: receive
+	            });				
+
+			
+
+	        
+
+
+			document.querySelector('.headline').innerHTML = this.pubnub.supplant(
+		    	'Connecting to the {channel} channel as {sender_id}', {sender_id: username, channel: channel})
+            
+            
+
+		    
 		},
 		home: function() {
 			this.updateUser()
@@ -97,12 +133,14 @@
 				this.collectionExists.then(function(data) {
 					
 						this.meetupView = z(Backbone.MeetupsView, {collection: this.collection});
+						this.chatView = z(Backbone.ChatView);
 
 						$('.meetups').show()
 						$('#map').show();
 
 						this.getGoogleMap();
 						React.render(this.meetupView, this.meetups);
+						React.render(this.chatView, this.actions);
 
 						//starting a pubnub chatroom instance;
 						this.runPubNub();
@@ -161,6 +199,8 @@
 		// 	'?&sign=true&format=json&photo-host=public&page=1&',
 		// 	'key=2963568336371205b3948793023157b'].join('');
 		// }
+		
+		// https://api.meetup.com/2/groups.json?callback=?&sign=true&photo-host=public&group_id=4982042&page=20
 	});
 
 	Backbone.Meetups = Backbone.Collection.extend({
@@ -250,9 +290,26 @@
 			return z('div.form-wrapper', [
 				z('form.username', {onSubmit: this._getUserName}, [
 					//need to regex
-					z('input:text[required][placeholder=Choose a Username]@username')
+					z('input:text.username-box[required][placeholder=Choose a Username]@username')
 					// z('button', 'START!')
 				])
+			])
+		}
+	})
+
+	Backbone.ChatView = React.createClass({
+		displayName: 'ChatView',
+		_sendText: function(e) {
+			e.preventDefault();
+			var form = document.querySelector('.textbox'),
+				form_val = React.findDOMNode(this.refs.chatMessage).value;
+			
+			form.reset();
+			Backbone.trigger('chatting', {chat: form_val})
+		},
+		render: function() {
+			return z('form.textbox', {onSubmit: this._sendText}, [
+				z('input:text@chatMessage')
 			])
 		}
 	})
