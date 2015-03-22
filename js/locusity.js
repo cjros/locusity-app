@@ -44,14 +44,14 @@
 			this.isUser = localStorage.getItem('username')
 		},
 		runPubNub: function() {
-			// console.log(this)
-			// var self = this;
-			// Backbone.bind('chatting', function(data){
-			// 	console.log(data.chat)
-			// 	self.pubnub.chat_text = data.chat;
-			// })
 			this.updateUser();
-			console.log(this.point.latitude);
+			var self = this;
+
+			Backbone.bind('chatting', function(data){
+				console.log(data.chat)
+				send(data.chat);
+			})
+			
 
 			this.pubnub = PUBNUB.init({
                 publish_key: 'pub-c-28310c24-9919-4f88-9bc3-817089853ade',
@@ -94,10 +94,12 @@
 	                message: receive
 	            });				
 
-			
-
-	        
-
+				function send(text) {
+	                self.pubnub.publish({
+	                    channel: chatarea,
+	                    message: text
+	                });
+            }
 
 			document.querySelector('.headline').innerHTML = this.pubnub.supplant(
 		    	'Connecting to the {channel} channel as {sender_id}', {sender_id: username, channel: channel})
