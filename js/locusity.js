@@ -74,7 +74,7 @@
             }
 
             function showMessage(text) {
-            	update.innerHTML = safe_text(text) + '<br>' + update.innerHTML;
+            	update.innerHTML += username + ' :' + safe_text(text) + '<br>';
             }
 
             function receive(data) {
@@ -82,7 +82,7 @@
             }
 
 			var username = this.isUser,
-				chatbox = this.pubnub.$('.username-box'),
+				// chatbox = this.pubnub.$('.username-box'),
 				update = document.querySelector('.core'),
 				channel = 'locusity',
 				chatarea = chatRange(this.point.latitude, 1) + '' + chatRange(this.point.longitude, 1);
@@ -96,6 +96,7 @@
 
 				function send(text) {
 	                self.pubnub.publish({
+	                	sender_id: username,
 	                    channel: chatarea,
 	                    message: text
 	                });
