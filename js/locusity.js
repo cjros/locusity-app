@@ -192,7 +192,9 @@
 				deferred.resolve({latitude: pos.coords.latitude, longitude: pos.coords.longitude});
 			}
 			function fail(error) {
-				console.log(error.code + ': uh oh, that\'s not good');
+				alert('Is your internet enabled? Please try again!\n' +
+					'Did you block your location? Please re-enable your location to use this app!\n'+
+					'\nThank you!');
 			}
 
 			navigator.geolocation.getCurrentPosition(success, fail);
