@@ -138,13 +138,15 @@
 					
 						this.meetupView = z(Backbone.MeetupsView, {collection: this.collection});
 						this.chatView = z(Backbone.ChatView);
+						this.shiftView = z(Backbone.ShiftContent);
 
 						$('.meetups').show()
 						$('#map').show();
 
 						this.getGoogleMap();
+						React.render(this.shiftView, this.left);
 						React.render(this.meetupView, this.meetups);
-						React.render(this.chatView, this.actions);
+						// React.render(this.chatView, this.actions);
 
 						//starting a pubnub chatroom instance;
 						this.runPubNub();
@@ -252,6 +254,17 @@
 		}
 	});
 
+	Backbone.ShiftContent = React.createClass({
+		display: 'ShiftContent',
+		render: function() {
+			return z('div.shift-wrapper', [
+				z(Backbone.Header),
+				z(Backbone.ChatView),
+				z(Backbone.Footer)
+			])
+		}
+	})
+
 	Backbone.Footer = React.createClass({
 		displayName: 'Footer',
 		render: function() {
@@ -316,8 +329,15 @@
 			Backbone.trigger('chatting', {chat: form_val})
 		},
 		render: function() {
-			return z('form.textbox', {onSubmit: this._sendText}, [
-				z('input:text@chatMessage')
+			return z('div.chat-wrapper', [
+				z('div.headline'),
+				z('div.core'),
+				z('div.users'),
+				z('div.actions', [
+					z('form.textbox', {onSubmit: this._sendText}, [
+						z('input:text[placeholder=send a msg!][autofocus]@chatMessage')
+					])
+				])
 			])
 		}
 	})
