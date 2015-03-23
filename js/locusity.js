@@ -74,10 +74,11 @@
             }
 
             function showMessage(text) {
-            	update.innerHTML += username + ' :' + safe_text(text) + '<br>';
+            	update.innerHTML += '<span class="aMsg">' + username + ': ' + safe_text(text) + '</span><br>';
             }
 
             function receive(data) {
+            	console.log(data)
             	showMessage(data)
             }
 
@@ -171,9 +172,11 @@
 					this.meetMap.addMarker({
 						lat: this.lat,
 						lng: this.lng,
-						title: 'Hi',
+						title: d.get('name'),
 						infoWindow: {
-							content: '<p>' + 'Hi' + '</p>'
+							content: '<p style="font-weight: bold;">' + d.get('name') + '</p>' +
+								'<p> Event held at: ' + d.get('venue').name + '</p>' +
+								'<p>Date and Time: ' + new Date(d.get('time')) + '</p>'
 						}
 					})
 				} else {
@@ -236,13 +239,15 @@
 	Backbone.StaticContent = React.createClass({
 		displayName: 'StaticContent',
 		render: function() {
-			var lorem = 'why can\'t i use lorem ipsom whatever whatever? it doesn\'t make any sense'+
-				'i cannot deal with these right now Lorem ipsum dolor sit amet, consectetur' +
-				'adipisicing elit, sed do eiusmod tempor incididunt ut labore et' +
-				'dolore magna aliqua. Ut enim ad minim veniam';
 			return z('div.static-wrapper', [
-				z('span', 'should probably add a svg img there of a laptop or something'),
-				z('div.info', lorem)
+				z('div.features', [
+					z('h3', {key: 1}, 'Immediately chat and quickly plan'),
+					z('div.chatplan', 'No need to sign up! Just pick a username and your are taken straight to the chatroom that uses your current location'),
+					z('h3', {key: 2}, 'Interested in meetups?'),
+					z('div.meetup-info', 'This app also uses meetups.com API to allow you to see upcoming events that are also around your current location'),
+					z('h3', {key: 3}, 'Connect with others that are interested too!'),
+					z('div.connectothers', 'Use the chatroom to your advantage! Talk to others about those events and quickly find those with similar interests as yours!')
+				])
 			])
 		}
 	});

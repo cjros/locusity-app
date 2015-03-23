@@ -79,11 +79,13 @@
  $secFont: 'Oxygen', sans-serif;
  $shadow: 0px 1px 5px #777;
 
+html,
 body {
+    height: 100%;
     transition: opacity .25s ease;
 }
 .main {
-    max-height: 100vh;
+    height: 100%;
 }
 .left-content {
     z-index: 2;
@@ -92,7 +94,7 @@ body {
     font-family: $secFont;
     background-color: $mainColor;
     color: $mainTextColor;
-    min-height: 100vh;
+    height: 100%;
     padding: 1em;
     box-shadow: 1px 0 5px -1px #000;
     animation: slideFromLeft 1s ease;
@@ -104,7 +106,7 @@ body {
     
     background-color: whitesmoke;
     overflow-y: scroll;
-    height: 100vh;
+    min-height: 100%;
 
 }
 .title {
