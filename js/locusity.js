@@ -22,6 +22,8 @@
 			this.getLocation().then(function(d) {
 				this.point = d
 				console.log(this.point)
+				// this.model = new Backbone.aMeetup();
+				// console.log(this.model)
 				this.collection = new Backbone.Meetups()
 				this.collection.latitude = this.point.latitude;
 				this.collection.longitude = this.point.longitude;
@@ -74,7 +76,7 @@
             }
 
             function showMessage(text) {
-            	update.innerHTML += '<span class="aMsg">' + username + ': ' + safe_text(text) + '</span><br>';
+            	update.innerHTML += '<p class="aMsg">' + '<span class="bolduser">' +username + '</span>' + ': ' + safe_text(text) + '</p>';
             }
 
             function receive(data) {
@@ -104,7 +106,7 @@
             }
 
 			document.querySelector('.headline').innerHTML = this.pubnub.supplant(
-		    	'Connecting to the {channel} channel as {sender_id}', {sender_id: username, channel: channel})
+		    	'Connected to the {channel} channel as {sender_id}', {sender_id: username, channel: channel})
             
             
 
@@ -203,6 +205,18 @@
 	});
 
 	Backbone.aMeetup = Backbone.Model.extend({
+		parse: function(data) {
+			console.log(data)
+			$.getJSON(
+				['https://api.meetup.com/2/groups.json?callback=?&sign=true&photo-host=public&group_id=',
+				data.group.id,
+				'&page=10&key=2963568336371205b3948793023157b'
+				].join(''))
+			.then(function(moreData) {
+				data.group = moreData.results[0] //overwriting the collection's group object with this fetch. 
+			})
+			return data
+		}
 		// url: function() {
 		// 	return ['https://api.meetup.com/2/event/',
 		// 	this.collection.id,
@@ -210,7 +224,15 @@
 		// 	'key=2963568336371205b3948793023157b'].join('');
 		// }
 		
-		// https://api.meetup.com/2/groups.json?callback=?&sign=true&photo-host=public&group_id=4982042&page=20
+		// url: function() {
+		// return ['https://api.meetup.com/2/groups.json?callback=?',
+		// '&sign=true&photo-host=public&',
+		// 'group_id=', this.collection.get('group').id,
+		// '&page=10&key=2963568336371205b3948793023157b'].join('');
+		// },
+		// parse: function(data) {
+		// 	return data.results;
+		// }
 	});
 
 	Backbone.Meetups = Backbone.Collection.extend({
@@ -224,7 +246,10 @@
 			'key=2963568336371205b3948793023157b'].join('')
 		},
 		parse: function(data) {
-			return data.results;
+			data = data.results;
+			// debugger;
+			
+			return data
 		}
 	});
 
@@ -234,7 +259,7 @@
 			return z('header', [
 					z('div.title', [
 						z('h1', 'Locusity'),
-						z('h6', 'Connect with those around you')
+						z('h6', 'Connect and meet with those around you')
 					])
 				])
 		}
@@ -248,7 +273,7 @@
 					z('h3', {key: 1}, 'Immediately chat and quickly plan'),
 					z('div.chatplan', 'No need to sign up! Just pick a username and your are taken straight to the chatroom that uses your current location'),
 					z('h3', {key: 2}, 'Interested in meetups?'),
-					z('div.meetup-info', 'This app also uses meetups.com API to allow you to see upcoming events that are also around your current location'),
+					z('div.meetup-info', 'This app also uses meetups.com\'s API to allow you to see upcoming events that are also around your current location'),
 					z('h3', {key: 3}, 'Connect with others that are interested too!'),
 					z('div.connectothers', 'Use the chatroom to your advantage! Talk to others about those events and quickly find those with similar interests as yours!')
 				])
@@ -272,9 +297,9 @@
 		render: function() {
 			return z('nav', [
 					z('ul', [
-						z('li.about', 'Social Buttons'),
-						z('li.contact', 'Contact'),
-						z('li.techs', 'Tech Used')
+						z('a.source[href=http://github.com/cjros/locusity-app/]', ' GitHub Source Code'),
+						z('a.contact[href=mailto:clor09@gmail.com]', 'Bugs or suggestions? Let me know please!')
+						// z('li.techs', 'Tech Used')
 					])
 				])
 		}
@@ -337,7 +362,7 @@
 				z('div.users'),
 				z('div.actions', [
 					z('form.textbox', {onSubmit: this._sendText}, [
-						z('input:text[placeholder=send a msg!][autofocus]@chatMessage')
+						z('input:text.sendmsg[placeholder=SEND A MSG!][maxlength=140]@chatMessage')
 					])
 				])
 			])
@@ -357,6 +382,7 @@
 			var each = this.props.collection.models;
 			return z('div.meets', 
 				each.map(function(data) {
+					console.log(data)
 					return z('div.'+data.get('id'), [
 						z('div.meetName', data.get('name')),
 						z('div.rsvp', data.get('yes_rsvp_count')),
