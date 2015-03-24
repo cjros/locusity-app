@@ -23,7 +23,7 @@
 			this.collectionExists = $.Deferred();
 			this.getLocation().then(function(d) {
 				this.point = d
-				console.log(this.point)
+				// console.log(this.point)
 				// this.model = new Backbone.aMeetup();
 				// console.log(this.model)
 				this.collection = new Backbone.Meetups()
@@ -32,8 +32,8 @@
 				
 				this.collection.fetch().then(function(data) {
 					this.collectionExists.resolve(this.collection);
-					console.log('testing for user')
-					console.log('this is the username: ' + this.isUser);
+					// console.log('testing for user')
+					// console.log('this is the username: ' + this.isUser);
 					
 				}.bind(this))
 			}.bind(this))
@@ -121,7 +121,7 @@
 				if (this.isUser) {
 					this.navigate('#chat', {trigger: true});
 				} else {
-					console.log(data)
+					// console.log(data)
 					this.chatSide = z(Backbone.ChooseUserName);
 					React.render(this.chatSide, this.username);
 				}
@@ -130,13 +130,16 @@
 			
 		},
 		chatroom: function() {
+			$('.meetup-detail').hide();
+			$('.main').removeClass('dim');
+			$('.main').removeClass('noclicks');
 			this.updateUser()
 			if (!this.isUser) {
-				console.log('if no username, input should come up')
+				// console.log('if no username, input should come up')
 				this.navigate('#home', {trigger: true, replace: true});
 			} else {
 				this.collectionExists.then(function(data) {
-					
+						// console.log(data)
 						this.meetupView = z(Backbone.MeetupsView, {collection: this.collection});
 						this.chatView = z(Backbone.ChatView);
 						this.shiftView = z(Backbone.ShiftContent);
@@ -157,11 +160,36 @@
 
 		},
 		details: function(event_id) {
-			console.log('this should show details of the event');
-			this.collectionExists.then(function(data) {
-				this.detailView = z(Backbone.MeetupDetail, { collection: this.collection });
-				React.render(this.detailView, this.meetupDetail);
-			}.bind(this))
+			this.updateUser();
+			if (!this.isUser) {
+				this.navigate('#home', {trigger: true});
+			} else {
+				// console.log('this should show details of the event');
+				this.collectionExists.then(function(data) {
+
+					//create promise to check if any of these things already exist
+					this.meetupView = z(Backbone.MeetupsView, {collection: this.collection});
+					this.chatView = z(Backbone.ChatView);
+					this.shiftView = z(Backbone.ShiftContent);
+
+					$('.meetups').show()
+					$('#map').show();
+
+					if (!this.meetMap) this.getGoogleMap();
+					React.render(this.shiftView, this.left);
+					React.render(this.meetupView, this.meetups);
+					// React.render(this.chatView, this.actions);
+
+					//starting a pubnub chatroom instance;
+					if (!this.pubnub) this.runPubNub();
+					//end of the promise check
+
+
+					this.detailView = z(Backbone.MeetupDetail, { collection: this.collection });
+					React.render(this.detailView, this.meetupDetail);
+				}.bind(this))
+			}
+			
 			
 		},
 		getGoogleMap: function() {
@@ -213,14 +241,16 @@
 
 	Backbone.aMeetup = Backbone.Model.extend({
 		parse: function(data) {
-			console.log(data)
+			// console.log(data)
 			$.getJSON(
 				['https://api.meetup.com/2/groups.json?callback=?&sign=true&photo-host=public&group_id=',
 				data.group.id,
 				'&page=10&key=2963568336371205b3948793023157b'
 				].join(''))
 			.then(function(moreData) {
+				console.log(moreData)
 				data.group = moreData.results[0] //overwriting the collection's group object with this fetch. 
+				console.log(data.group)
 			})
 			return data
 		}
@@ -378,6 +408,7 @@
 						z('div.meetName', [
 							z('a[href=#details/'+ data.get('id') + ']', {key: data.get('id')}, data.get('name'))
 						]),
+						// z('img[src='+ data.get('group').)
 						z('div.rsvp', data.get('yes_rsvp_count')),
 						z('div.when', new Date(data.get('time'))),
 						z('div.desc', [data.get('description')]),
@@ -404,7 +435,7 @@
 			$('.main').addClass('noclicks');
 			console.log(this.props);
 			return z('div.lightbox', [
-				z('h3.detail-title', this.props.collection.models[0].get('name')),
+				z('h4.detail-title', this.props.collection.models[0].get('name')),
 				z('button', {onClick: this._close}, 'X')
 			])
 		}

@@ -242,17 +242,24 @@ nav {
     height: 100%;
     width: 50%;
     max-height: 300px;
-    background-color: $mainColor;
+    background-color: whitesmoke;
     color: whitesmoke;
-    border: 2px solid whitesmoke;
+    border: 5px solid $mainColor;
     border-radius: 10px;
     & > .lightbox {
         position: relative;
         & > button {
             position: absolute;
-            top: 0;
-            right: 0;
-            border: 2px solid whitesmoke;
+            top: -1em;
+            right: -1em;
+            background-color: whitesmoke;
+            border-color: $mainColor;
+            padding: .5em;
+            color: $mainColor;
+            font-family: $mainFont;
+            border-radius: 100%;
+            height: 50px;
+            width: 50px;
         }
     }
 }
