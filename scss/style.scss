@@ -81,6 +81,7 @@
 
 html,
 body {
+    position: relative;
     height: 100%;
     transition: opacity .25s ease;
 }
@@ -193,7 +194,7 @@ nav {
 }
 
 .form-wrapper {
-    min-height: 100vh;
+    height: 100%;
     & > * {
         text-align: center;
         transform: translateY(200%);
@@ -218,6 +219,7 @@ nav {
     }
 }
 .meetups {
+    position: relative;
     max-height: 300px;
     overflow-y: scroll;
     // border: 2px solid red;
@@ -227,7 +229,32 @@ nav {
     // background-color: $mainColor;
     font-family: $secFont;
     color: whitesmoke;
-    
+    box-shadow: $shadow;
+}
+.meetup-detail {
+    position: absolute;
+    z-index: 3;
+    top: 30%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0 auto;
+    height: 100%;
+    width: 50%;
+    max-height: 300px;
+    background-color: $mainColor;
+    color: whitesmoke;
+    border: 2px solid whitesmoke;
+    border-radius: 10px;
+    & > .lightbox {
+        position: relative;
+        & > button {
+            position: absolute;
+            top: 0;
+            right: 0;
+            border: 2px solid whitesmoke;
+        }
+    }
 }
 .meets {
     & > * {
@@ -241,6 +268,9 @@ nav {
         font-weight: bold;
         text-decoration: underline;
         font-size: 1.25rem;
+        & > a {
+            color: whitesmoke;
+        }
       }
     }
 }
@@ -258,6 +288,12 @@ nav {
 //jquery classes
 .disappear {
     animation: fadeOut .75s ease both;
+}
+.dim {
+    opacity: .4;
+}
+.noclicks {
+    pointer-events: none;
 }
 
 @keyframes fadeOut {

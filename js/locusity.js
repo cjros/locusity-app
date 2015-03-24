@@ -7,11 +7,13 @@
 			this.updateUser();
 
 			$('#map').hide();
+			$('.meetup-detail').hide();
 			this.left = document.querySelector('.left-content');
 			this.right = document.querySelector('.right-content');
 			this.username = document.querySelector('.username');
 			this.meetups = document.querySelector('.meetups');
 			this.actions = document.querySelector('.actions');
+			this.meetupDetail = document.querySelector('.meetup-detail');
 
 
 			this.infoSide = z(Backbone.FixedSide);
@@ -39,6 +41,7 @@
 			Backbone.history.start();
 		},
 		routes: {
+			'details/:event_id': 'details',
 			'chat': 'chatroom',
 			'*default': 'home'
 		},
@@ -107,10 +110,6 @@
 
 			document.querySelector('.headline').innerHTML = this.pubnub.supplant(
 		    	'Connected to the {channel} channel as {sender_id}', {sender_id: username, channel: channel})
-            
-            
-
-		    
 		},
 		home: function() {
 			this.updateUser()
@@ -145,17 +144,25 @@
 						$('.meetups').show()
 						$('#map').show();
 
-						this.getGoogleMap();
+						if (!this.meetMap) this.getGoogleMap();
 						React.render(this.shiftView, this.left);
 						React.render(this.meetupView, this.meetups);
 						// React.render(this.chatView, this.actions);
 
 						//starting a pubnub chatroom instance;
-						this.runPubNub();
+						if (!this.pubnub) this.runPubNub();
 
 				}.bind(this))
 			}
 
+		},
+		details: function(event_id) {
+			console.log('this should show details of the event');
+			this.collectionExists.then(function(data) {
+				this.detailView = z(Backbone.MeetupDetail, { collection: this.collection });
+				React.render(this.detailView, this.meetupDetail);
+			}.bind(this))
+			
 		},
 		getGoogleMap: function() {
 			//probably create a cache for this whole map?
@@ -217,22 +224,6 @@
 			})
 			return data
 		}
-		// url: function() {
-		// 	return ['https://api.meetup.com/2/event/',
-		// 	this.collection.id,
-		// 	'?&sign=true&format=json&photo-host=public&page=1&',
-		// 	'key=2963568336371205b3948793023157b'].join('');
-		// }
-		
-		// url: function() {
-		// return ['https://api.meetup.com/2/groups.json?callback=?',
-		// '&sign=true&photo-host=public&',
-		// 'group_id=', this.collection.get('group').id,
-		// '&page=10&key=2963568336371205b3948793023157b'].join('');
-		// },
-		// parse: function(data) {
-		// 	return data.results;
-		// }
 	});
 
 	Backbone.Meetups = Backbone.Collection.extend({
@@ -384,7 +375,9 @@
 				each.map(function(data) {
 					console.log(data)
 					return z('div.'+data.get('id'), [
-						z('div.meetName', data.get('name')),
+						z('div.meetName', [
+							z('a[href=#details/'+ data.get('id') + ']', {key: data.get('id')}, data.get('name'))
+						]),
 						z('div.rsvp', data.get('yes_rsvp_count')),
 						z('div.when', new Date(data.get('time'))),
 						z('div.desc', [data.get('description')]),
@@ -392,6 +385,28 @@
 					])
 				})
 			)
+		}
+	})
+
+	Backbone.MeetupDetail = React.createClass({
+		display: 'MeetupDetail',
+		_close: function(e) {
+			e.preventDefault();
+			$('.meetup-detail').hide();
+			$('.main').removeClass('dim');
+			$('.main').removeClass('noclicks');
+
+			window.location.hash = '#chat';
+		},
+		render: function() {
+			$('.meetup-detail').show();
+			$('.main').addClass('dim');
+			$('.main').addClass('noclicks');
+			console.log(this.props);
+			return z('div.lightbox', [
+				z('h3.detail-title', this.props.collection.models[0].get('name')),
+				z('button', {onClick: this._close}, 'X')
+			])
 		}
 	})
 
