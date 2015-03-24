@@ -200,6 +200,11 @@
 					lng: this.collection.longitude,
 					zoom: 10
 			})
+			this.meetMap.drawOverlay({
+			  lat: this.collection.latitude,
+			  lng: this.collection.longitude,
+			  content: '<div class="overlay">.</div>'
+			});
 
 			this.collection.models.map(function(d, i, a) {
 				// debugger;
@@ -215,7 +220,9 @@
 						infoWindow: {
 							content: '<p style="font-weight: bold;">' + d.get('name') + '</p>' +
 								'<p> Event held at: ' + d.get('venue').name + '</p>' +
-								'<p>Date and Time: ' + new Date(d.get('time')) + '</p>'
+								'<p> Address: ' + d.get('venue').address_1 + ' ' + d.get('venue').city + ' ' + d.get('venue').state + '</p>' +
+								'<p>Date and Time: ' + new Date(d.get('time')) + '</p>' +
+								'<p>Approx. distance from current location: ' + Math.round(d.get('distance')) + ' miles</p>'
 						}
 					})
 				} else {
@@ -240,20 +247,70 @@
 	});
 
 	Backbone.aMeetup = Backbone.Model.extend({
-		parse: function(data) {
-			// console.log(data)
-			$.getJSON(
-				['https://api.meetup.com/2/groups.json?callback=?&sign=true&photo-host=public&group_id=',
-				data.group.id,
-				'&page=10&key=2963568336371205b3948793023157b'
-				].join(''))
-			.then(function(moreData) {
-				console.log(moreData)
-				data.group = moreData.results[0] //overwriting the collection's group object with this fetch. 
-				console.log(data.group)
-			})
-			return data
-		}
+		initialize: function(options) {
+			// console.log(options)
+			this.bind('request', this.handleRequest)
+			// if (options.group.id) {
+			// $.getJSON(
+			// 	['https://api.meetup.com/2/groups.json?callback=?&sign=true&photo-host=public&group_id=',
+			// 	options.group.id,
+			// 	'&page=10&key=2963568336371205b3948793023157b'
+			// 	].join('')
+			// )
+			// .then(function(moreData) {
+			// 	console.log(moreData)
+			// 	debugger;
+			// 	options.group = moreData.results[0] //overwriting the collection's group object with this fetch.
+			// 	// console.log(data)
+			// 	return data
+			// })
+			// } else {
+			// 	return data
+			// }
+		},
+		handleRequest: function() {
+			if (data.group.id) {
+				$.getJSON(
+					['https://api.meetup.com/2/groups.json?callback=?&sign=true&photo-host=public&group_id=',
+					data.group.id,
+					'&page=10&key=2963568336371205b3948793023157b'
+					].join('')
+				)
+				.then(function(moreData) {
+					this.handleTriggeredResponse;
+					// console.log(moreData)
+					// debugger;
+					// data.group = moreData.results[0] //overwriting the collection's group object with this fetch.
+					// // console.log(data)
+					// return data
+				})
+			} else {
+				return data
+			}
+		},
+		handleTriggeredResponse: function(response) {
+        	this.set(response.data);
+    	}
+		// parse: function(data) {
+		// 	console.log(data)
+		// 	if (data.group.id) {
+		// 		$.getJSON(
+		// 			['https://api.meetup.com/2/groups.json?callback=?&sign=true&photo-host=public&group_id=',
+		// 			data.group.id,
+		// 			'&page=10&key=2963568336371205b3948793023157b'
+		// 			].join('')
+		// 		)
+		// 		.then(function(moreData) {
+		// 			console.log(moreData)
+		// 			debugger;
+		// 			data.group = moreData.results[0] //overwriting the collection's group object with this fetch.
+		// 			// console.log(data)
+		// 			return data
+		// 		})
+		// 	} else {
+		// 		return data
+		// 	}
+		// }
 	});
 
 	Backbone.Meetups = Backbone.Collection.extend({
@@ -267,8 +324,8 @@
 			'key=2963568336371205b3948793023157b'].join('')
 		},
 		parse: function(data) {
+			console.log(data)
 			data = data.results;
-			// debugger;
 			
 			return data
 		}
