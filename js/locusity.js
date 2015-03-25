@@ -61,8 +61,8 @@
 
 			this.pubnub = PUBNUB.init({
                 publish_key: 'pub-c-28310c24-9919-4f88-9bc3-817089853ade',
-				subscribe_key: 'sub-c-db7a32e2-c8ea-11e4-9356-02ee2ddab7fe'
-				// uuid: this.isUser
+				subscribe_key: 'sub-c-db7a32e2-c8ea-11e4-9356-02ee2ddab7fe',
+				uuid: this.isUser
 	        });
 
 	        this.pubnub.time(
@@ -109,14 +109,16 @@
 				this.pubnub.subscribe({
 	                channel: chatarea,
 	                message: receive,
-	                presence: function(m) {
-						update.innerHTML += '<p class="aMsg">' + '<span class="bolduser">' + m.uuid+ '</span> has '  + m.action + ' the channel</p>';
-					},
-
-					state: {
-					  name: username,
+	                state: {
+					  uuid: username,
 					  timestamp: new Date()
+					},
+	                presence: function(m) {
+	                	console.log(m)
+						update.innerHTML += '<p class="aMsg">' + '<span class="bolduser">' + m.uuid+ '</span> has '  + m.action + ' the channel</p>';
 					}
+
+					
 	            });				
 
 				this.pubnub.here_now({
