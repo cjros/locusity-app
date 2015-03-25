@@ -71,6 +71,8 @@
                 }
             );
 
+            
+
 	        function chatRange(coord, resolution) {
 		        var rez = Math.pow( 10, resolution || 0 );
 		        return Math.floor(coord * rez) / rez;
@@ -97,12 +99,31 @@
 				channel = 'locusity',
 				chatarea = chatRange(this.point.latitude, 1) + '' + chatRange(this.point.longitude, 1);
 
-				console.log(username)
+				// this.pubnub.state({
+				//    channel  : chatarea,
+				//    state    : { "aUser": username },
+				//    callback : function(m){console.log(m)},
+				//    error    : function(m){console.log(m)}
+				// });
 				
 				this.pubnub.subscribe({
 	                channel: chatarea,
-	                message: receive
+	                message: receive,
+	                presence: function(m) {
+						update.innerHTML += '<p class="aMsg">' + '<span class="bolduser">' + m.uuid+ '</span> has '  + m.action + ' the channel</p>';
+					},
+
+					state: {
+					  name: username,
+					  timestamp: new Date()
+					}
 	            });				
+
+				this.pubnub.here_now({
+				    channel : chatarea,
+				    state: true,
+				    callback : function(m){console.log(m)}
+				 });
 
 				function send(text) {
 	                self.pubnub.publish({
