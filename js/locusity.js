@@ -54,13 +54,15 @@
 
 			Backbone.bind('chatting', function(data){
 				console.log(data.chat)
-				send(data.chat);
+				console.log(username)
+				send({name: username, msg: data.chat});
 			})
 			
 
 			this.pubnub = PUBNUB.init({
                 publish_key: 'pub-c-28310c24-9919-4f88-9bc3-817089853ade',
-				subscribe_key: 'sub-c-db7a32e2-c8ea-11e4-9356-02ee2ddab7fe',
+				subscribe_key: 'sub-c-db7a32e2-c8ea-11e4-9356-02ee2ddab7fe'
+				// uuid: this.isUser
 	        });
 
 	        this.pubnub.time(
@@ -79,7 +81,9 @@
             }
 
             function showMessage(text) {
-            	update.innerHTML += '<p class="aMsg">' + '<span class="bolduser">' +username + '</span>' + ': ' + safe_text(text) + '</p>';
+            	console.log(text);
+            	update.innerHTML += '<p class="aMsg">' + '<span class="bolduser">' + text.name+ '</span>' + ': ' + text.msg + '</p>';
+            	update.scrollTop = update.scrollHeight; //scrolls div to the latest message!
             }
 
             function receive(data) {
@@ -102,8 +106,8 @@
 
 				function send(text) {
 	                self.pubnub.publish({
-	                	sender_id: username,
 	                    channel: chatarea,
+	                    // sender_id: username,
 	                    message: text
 	                });
             }
@@ -154,7 +158,6 @@
 
 						//starting a pubnub chatroom instance;
 						if (!this.pubnub) this.runPubNub();
-
 				}.bind(this))
 			}
 
@@ -336,6 +339,7 @@
 		render: function() {
 			return z('header', [
 					z('div.title', [
+						z('i.fa.fa-map-marker'),
 						z('h1', 'Locusity'),
 						z('h6', 'Connect and meet with those around you')
 					])
@@ -348,10 +352,13 @@
 		render: function() {
 			return z('div.static-wrapper', [
 				z('div.features', [
+					z('i.fa.fa-weixin'),
 					z('h3', {key: 1}, 'Immediately chat and quickly plan'),
 					z('div.chatplan', 'No need to sign up! Just pick a username and your are taken straight to the chatroom that uses your current location'),
+					z('i.fa.fa-users'),
 					z('h3', {key: 2}, 'Interested in meetups?'),
 					z('div.meetup-info', 'This app also uses meetups.com\'s API to allow you to see upcoming events that are also around your current location'),
+					z('i.fa.fa-link'),
 					z('h3', {key: 3}, 'Connect with others that are interested too!'),
 					z('div.connectothers', 'Use the chatroom to your advantage! Talk to others about those events and quickly find those with similar interests as yours!')
 				])

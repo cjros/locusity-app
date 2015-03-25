@@ -1,6 +1,7 @@
 @import "../bower_components/normalize-scss/_normalize.scss";
 @import "../bower_components/typeplate-starter-kit/css/_typeplate.scss";
 @import "./mixins.scss";
+@import "../bower_components/font-awesome/css/font-awesome.min.css";
 
 /**
  * BOX-SIZING
@@ -73,7 +74,7 @@
  * GENERAL
  */
 
- $mainColor: #F44336;
+ $mainColor: rgb(66, 133, 244);
  $mainTextColor: whitesmoke;
  $mainFont: 'Montserrat', sans-serif;
  $secFont: 'Oxygen', sans-serif;
@@ -101,9 +102,21 @@ body {
     animation: slideFromLeft 1s ease;
 }
 h3 {
+    padding: none;
+    margin: 0;
+    font-size: 1.5em;
     color: whitesmoke;
     font-family: $mainFont;
     text-shadow: 0px 1px 2px #777;
+}
+.features {
+    & > div {
+        padding-bottom: 1.25em;
+        margin: 0 1em;
+    }
+    & > i {
+       font-size: 2.25em;
+    }
 }
 .chat-wrapper {
     position: relative;
@@ -140,7 +153,7 @@ h3 {
         left: 0;
         right: 0;
         & > .textbox input {
-            color: red;
+            color: $mainColor;
             border: none;
             background-color: whitesmoke;
             height: 2em;
@@ -161,13 +174,17 @@ h3 {
 
 }
 .title {
-    padding-top: 3em;
+    padding-top: .5em;
+    // padding-bottom: 1em;
     
-    & > * {
+    & > *:not(.fa-map-marker) {
         text-shadow: 0px 1px 2px #777;
         font-family: $mainFont;
         color: $mainTextColor;
         animation: slideDown 1s ease;
+    }
+    & > .fa-map-marker {
+        font-size: 4.25em;
     }
 }
 nav {
@@ -229,7 +246,7 @@ nav {
     // background-color: $mainColor;
     font-family: $secFont;
     color: whitesmoke;
-    box-shadow: $shadow;
+    box-shadow: 0px 1px 20px #777;
 }
 .meetup-detail {
     position: absolute;
@@ -241,21 +258,23 @@ nav {
     margin: 0 auto;
     height: 100%;
     width: 50%;
-    max-height: 300px;
-    background-color: whitesmoke;
-    color: whitesmoke;
-    border: 5px solid $mainColor;
+    max-height: 50%;
+    background-color: $mainColor;
+    color: $mainColor;
+    border: 5px solid white;
     border-radius: 10px;
+    box-shadow: 0px 1px 20px #777;
+    animation: slideDown .5s ease-in-out;
     & > .lightbox {
         position: relative;
         & > button {
             position: absolute;
             top: -1em;
             right: -1em;
-            background-color: whitesmoke;
-            border-color: $mainColor;
+            background-color: $mainColor;
+            border-color: white;
             padding: .5em;
-            color: $mainColor;
+            color: white;
             font-family: $mainFont;
             border-radius: 100%;
             height: 50px;
@@ -292,7 +311,8 @@ nav {
       box-shadow: 0px 1px 20px #777;
 }
 .overlay {
-    background-color: darkblue;
+    background-color: rgba(66, 133, 244, .7);
+    border: 2px solid black;
     border-radius: 100%;
     height: 15px;
     width: 15px;
@@ -304,7 +324,7 @@ nav {
     animation: fadeOut .75s ease both;
 }
 .dim {
-    opacity: .4;
+    opacity: .6;
 }
 .noclicks {
     pointer-events: none;
