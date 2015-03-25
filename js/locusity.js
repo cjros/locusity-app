@@ -53,8 +53,8 @@
 			var self = this;
 
 			Backbone.bind('chatting', function(data){
-				console.log(data.chat)
-				console.log(username)
+				// console.log(data.chat)
+				// console.log(username)
 				send({name: username, msg: data.chat});
 			})
 			
@@ -83,20 +83,21 @@
             }
 
             function showMessage(text) {
-            	console.log(text);
+            	// console.log(text);
             	update.innerHTML += '<p class="aMsg">' + '<span class="bolduser">' + text.name+ '</span>' + ': ' + text.msg + '</p>';
             	update.scrollTop = update.scrollHeight; //scrolls div to the latest message!
             }
 
             function receive(data) {
-            	console.log(data)
+            	// console.log(data)
             	showMessage(data)
             }
 
 			var username = this.isUser,
 				// chatbox = this.pubnub.$('.username-box'),
-				update = document.querySelector('.core'),
+				update = document.querySelector('.chatPlace'),
 				channel = 'locusity',
+				userList = document.querySelector('.users'),
 				chatarea = chatRange(this.point.latitude, 1) + '' + chatRange(this.point.longitude, 1);
 
 				// this.pubnub.state({
@@ -105,6 +106,14 @@
 				//    callback : function(m){console.log(m)},
 				//    error    : function(m){console.log(m)}
 				// });
+
+				this.pubnub.here_now({
+				    channel : chatarea,
+				    // state: true,
+				    callback : function(m){
+				    	// console.log(m)
+				    }
+				 });
 				
 				this.pubnub.subscribe({
 	                channel: chatarea,
@@ -114,18 +123,34 @@
 					  timestamp: new Date()
 					},
 	                presence: function(m) {
+	                	var users_here = 0;
 	                	console.log(m)
-						update.innerHTML += '<p class="aMsg">' + '<span class="bolduser">' + m.uuid+ '</span> has '  + m.action + ' the channel</p>';
+	                	if (m.action !== 'join') {
+	                		document.querySelector('.'+m.uuid).remove();
+	                		$('.users').html('<span>' + (users_here--) + ' user(s)</span>');
+	                		return;
+	                	} else {
+	                		users_here++
+	                		update.innerHTML += '<p class="anEvent">' + '<span class="bolduser">' + m.uuid+ '</span> has '  + m.action + 'ed the channel</p>';
+							$('.users').html('<span>' + m.occupancy + ' user(s)</span>');
+	                	}
+						
+						document.querySelector('.userList').innerHTML += '<span class="' + m.uuid + '">' + m.uuid + '</span>';
+						// $('.userList').html('<span class="' + m.uuid + '"</span>' + m.uuid + '<br>');
+
 					}
 
 					
 	            });				
 
-				this.pubnub.here_now({
-				    channel : chatarea,
-				    state: true,
-				    callback : function(m){console.log(m)}
-				 });
+				window.addEventListener('onclose', function(e) {
+					if (this.pubnub) {
+						this.pubnub.unsubscribe({
+							channel: chatarea,
+							uuid: username
+						})
+					}
+				})
 
 				function send(text) {
 	                self.pubnub.publish({
@@ -136,7 +161,7 @@
             }
 
 			document.querySelector('.headline').innerHTML = this.pubnub.supplant(
-		    	'Connected to the {channel} channel as {sender_id}', {sender_id: username, channel: channel})
+		    	'Connected as {sender_id}', {sender_id: username })
 		},
 		home: function() {
 			this.updateUser()
@@ -466,8 +491,11 @@
 		render: function() {
 			return z('div.chat-wrapper', [
 				z('div.headline'),
-				z('div.core'),
-				z('div.users'),
+				z('div.core', [
+					z('div.chatPlace'),
+					z('div.users'),
+					z('div.userList')
+				]),
 				z('div.actions', [
 					z('form.textbox', {onSubmit: this._sendText}, [
 						z('input:text.sendmsg[placeholder=SEND A MSG!][maxlength=140]@chatMessage')
