@@ -134,7 +134,7 @@ h3 {
     & > .headline {
         font-weight: bold;
         font-size: 1.15rem;
-        text-decoration: underline;
+        // text-decoration: underline;
     }
     & > .core {
         margin: .25em .25em;
@@ -226,6 +226,20 @@ h3 {
     }
 }
 .right-content {
+    & > .meetsign {
+        font-size: 2.5em;
+        font-weight: bold;
+        font-family: $mainFont;
+        width: 85%;
+        margin: .5em auto .25em auto;
+        padding: .25em;
+        text-align: center;
+        background: whitesmoke;
+        color: $mainColor;
+        box-shadow: 0px 1px 10px #777;
+        border: 1px solid $mainColor;
+        border-radius: 10px;
+    }
     z-index: 1;
     animation: slideFromRight 1s ease;
     position: relative;
@@ -304,7 +318,7 @@ nav {
     max-height: 260px; //originally 300px
     overflow-y: scroll;
     border-radius: 10px;
-    margin: 8em auto 0 auto;
+    margin: 0 auto 0 auto;
     width: 85%;
     // background-color: $mainColor;
     font-family: $secFont;
@@ -346,22 +360,8 @@ nav {
         }
     }
 }
+
 .meets {
-    & > .meetsign {
-        position: absolute;
-        top: -4em;
-        z-index: 5;
-        font-size: 2.5em;
-        font-weight: bold;
-        font-family: $mainFont;
-        width: 100%;
-        margin: 1em auto;
-        text-align: center;
-        background: whitesmoke;
-        color: $mainColor;
-        box-shadow: 0px 1px 10px #777;
-        border-color: $mainColor;
-    }
     & > * {
         margin: 1em;
       padding: .5em;

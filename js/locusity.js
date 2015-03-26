@@ -7,6 +7,7 @@
 			this.updateUser();
 
 			$('#map').hide();
+			$('.meetsign').hide();
 			$('.meetups').hide();
 			$('.meetup-detail').hide();
 			this.left = document.querySelector('.left-content');
@@ -200,6 +201,7 @@
 						this.chatView = z(Backbone.ChatView);
 						this.shiftView = z(Backbone.ShiftContent);
 
+						$('.meetsign').show();
 						$('.meetups').show()
 						$('#map').show();
 
@@ -523,9 +525,9 @@
 			// tags with /
 			// <tag> grouping </tag>
 			var each = this.props.collection.models;
-			return z('div.meets', [
+			return z('div.meets', 
 					// z('i.fa.fa.users'),
-					z('div.meetsign', 'MEETUPS'),
+					// z('div.meetsign', 'MEETUPS'),
 				each.map(function(data) {
 					console.log(data)
 					function check(i) {
@@ -561,7 +563,7 @@
 						// z('a[href='+data.get('event_url')+']', 'MORE INFO HERE')
 					])
 				})
-			])
+			)
 		}
 	})
 
