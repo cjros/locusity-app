@@ -247,6 +247,7 @@ h3 {
     }
     & > .fa-map-marker {
         font-size: 4.25em;
+        text-shadow: 0px 1px 2px #777;
     }
 }
 nav {
@@ -298,17 +299,18 @@ nav {
     }
 }
 .meetups {
+    // margin-top: 7em;
     position: relative;
-    max-height: 300px;
+    max-height: 260px; //originally 300px
     overflow-y: scroll;
-    // border: 2px solid red;
     border-radius: 10px;
-    margin: 1em auto;
+    margin: 8em auto 0 auto;
     width: 85%;
     // background-color: $mainColor;
     font-family: $secFont;
     color: whitesmoke;
-    box-shadow: 0px 1px 20px #777;
+    border: 2px solid white;
+    box-shadow: 0px 1px 10px #777;
 }
 .meetup-detail {
     position: absolute;
@@ -325,7 +327,7 @@ nav {
     color: $mainColor;
     border: 5px solid white;
     border-radius: 10px;
-    box-shadow: 0px 1px 20px #777;
+    box-shadow: 0px 1px 10px #777;
     animation: slideDown .5s ease-in-out;
     & > .lightbox {
         position: relative;
@@ -345,6 +347,21 @@ nav {
     }
 }
 .meets {
+    & > .meetsign {
+        position: absolute;
+        top: -4em;
+        z-index: 5;
+        font-size: 2.5em;
+        font-weight: bold;
+        font-family: $mainFont;
+        width: 100%;
+        margin: 1em auto;
+        text-align: center;
+        background: whitesmoke;
+        color: $mainColor;
+        box-shadow: 0px 1px 10px #777;
+        border-color: $mainColor;
+    }
     & > * {
         margin: 1em;
       padding: .5em;
@@ -364,20 +381,20 @@ nav {
 }
 
 #map {
-        height: 325px;
+        height: 285px; //originally 325px;
       max-width: 85%;
       padding: 1em;
-      border: 7px solid white;
+      border: 2px solid white;
       border-radius: 10px;
       margin: 1em auto;
-      box-shadow: 0px 1px 20px #777;
+      box-shadow: 0px 1px 10px #777;
 }
 .overlay {
     background-color: rgba(66, 133, 244, .7);
     border: 2px solid black;
     border-radius: 100%;
-    height: 15px;
-    width: 15px;
+    height: 10px;
+    width: 10px;
     text-align: center;
 }
 

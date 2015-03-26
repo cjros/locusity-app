@@ -7,6 +7,7 @@
 			this.updateUser();
 
 			$('#map').hide();
+			$('.meetups').hide();
 			$('.meetup-detail').hide();
 			this.left = document.querySelector('.left-content');
 			this.right = document.querySelector('.right-content');
@@ -98,6 +99,7 @@
 				update = document.querySelector('.chatPlace'),
 				channel = 'locusity',
 				userList = document.querySelector('.users'),
+				users_here = 0,
 				chatarea = chatRange(this.point.latitude, 1) + '' + chatRange(this.point.longitude, 1);
 
 				// this.pubnub.state({
@@ -123,14 +125,16 @@
 					  timestamp: new Date()
 					},
 	                presence: function(m) {
-	                	var users_here = 0;
-	                	console.log(m)
+	                	// console.log(m)
 	                	if (m.action !== 'join') {
+	                		users_here--;
+	                		console.log(users_here);
 	                		document.querySelector('.'+m.uuid).remove();
-	                		$('.users').html('<span>' + (users_here--) + ' user(s)</span>');
-	                		return;
+	                		$('.users').html('<span>' + users_here + ' user(s)</span>');
+	                		// return;
 	                	} else {
-	                		users_here++
+	                		users_here++;
+	                		console.log(users_here);
 	                		update.innerHTML += '<p class="anEvent">' + '<span class="bolduser">' + m.uuid+ '</span> has '  + m.action + 'ed the channel</p>';
 							$('.users').html('<span>' + m.occupancy + ' user(s)</span>');
 	                	}
@@ -143,14 +147,14 @@
 					
 	            });				
 
-				window.addEventListener('onclose', function(e) {
-					if (this.pubnub) {
-						this.pubnub.unsubscribe({
-							channel: chatarea,
-							uuid: username
-						})
-					}
-				})
+				// window.addEventListener('onclose', function(e) {
+				// 	if (this.pubnub) {
+				// 		this.pubnub.unsubscribe({
+				// 			channel: chatarea,
+				// 			uuid: username
+				// 		})
+				// 	}
+				// })
 
 				function send(text) {
 	                self.pubnub.publish({
@@ -258,6 +262,7 @@
 			});
 
 			this.collection.models.map(function(d, i, a) {
+				// console.log(d)
 				// debugger;
 
 				if(d.get('venue')) {
@@ -272,8 +277,10 @@
 							content: '<p style="font-weight: bold;">' + d.get('name') + '</p>' +
 								'<p> Event held at: ' + d.get('venue').name + '</p>' +
 								'<p> Address: ' + d.get('venue').address_1 + ' ' + d.get('venue').city + ' ' + d.get('venue').state + '</p>' +
-								'<p>Date and Time: ' + new Date(d.get('time')) + '</p>' +
-								'<p>Approx. distance from current location: ' + Math.round(d.get('distance')) + ' miles</p>'
+								// '<p>Date and Time: ' + new Date(d.get('time')) + '</p>' +
+								'<p>Approx. distance: ' + Math.round(d.get('distance')) + ' miles</p>' +
+								'<a href="http://maps.google.com/maps?saddr='+ this.collection.latitude+ ','+ this.collection.longitude +
+								'&daddr='+ d.get('venue').address_1 + '" target="_blank">Get directions to here!</a>'
 						}
 					})
 				} else {
@@ -516,21 +523,45 @@
 			// tags with /
 			// <tag> grouping </tag>
 			var each = this.props.collection.models;
-			return z('div.meets', 
+			return z('div.meets', [
+					// z('i.fa.fa.users'),
+					z('div.meetsign', 'MEETUPS'),
 				each.map(function(data) {
 					console.log(data)
+					function check(i) {
+						if (i < 10) {
+							i = '0'+ i;
+						}
+						return i;
+					}
+					function hour_check(i) {
+						if (i > 12) {
+							i = i - 12;
+						}
+						return i;
+					}
+					function am_pm(i) {
+						if (i > 12) {
+							return 'PM';
+						} else {
+							return 'AM'
+						}
+					}
+					var dT = new Date(data.get('time'))
+					var time = check(hour_check(dT.getHours())) + ':' + check(dT.getMinutes())+ ' '+ am_pm(dT.getHours());
 					return z('div.'+data.get('id'), [
 						z('div.meetName', [
 							z('a[href=#details/'+ data.get('id') + ']', {key: data.get('id')}, data.get('name'))
 						]),
 						// z('img[src='+ data.get('group').)
-						z('div.rsvp', data.get('yes_rsvp_count')),
-						z('div.when', new Date(data.get('time'))),
-						z('div.desc', [data.get('description')]),
-						z('a[href='+data.get('event_url')+']', 'MORE INFO HERE')
+						z('div.when', time),
+						z('div.rsvp', 'Attending: ' +data.get('yes_rsvp_count').toString() + ' ' + data.get('group').who)
+						
+						// z('div.desc', [data.get('description')]),
+						// z('a[href='+data.get('event_url')+']', 'MORE INFO HERE')
 					])
 				})
-			)
+			])
 		}
 	})
 
