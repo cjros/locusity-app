@@ -69,7 +69,7 @@
 
 	        this.pubnub.time(
                 function(time) {
-                    console.log(time)
+                    // console.log(time)
                 }
             );
 
@@ -129,13 +129,13 @@
 	                	// console.log(m)
 	                	if (m.action !== 'join') {
 	                		users_here--;
-	                		console.log(users_here);
+	                		// console.log(users_here);
 	                		document.querySelector('.'+m.uuid).remove();
 	                		$('.users').html('<span>' + users_here + ' user(s)</span>');
 	                		// return;
 	                	} else {
 	                		users_here++;
-	                		console.log(users_here);
+	                		// console.log(users_here);
 	                		update.innerHTML += '<p class="anEvent">' + '<span class="bolduser">' + m.uuid+ '</span> has '  + m.action + 'ed the channel</p>';
 							$('.users').html('<span>' + m.occupancy + ' user(s)</span>');
 							document.querySelector('.userList').innerHTML += '<span class="' + m.uuid + '">' + m.uuid + '</span>';
@@ -174,7 +174,7 @@
 
 			$('#map').hide();
 			$('.meetups').hide();
-			console.log('this is the home route');
+			// console.log('this is the home route');
 			this.collectionExists.then(function(data) {
 				if (this.isUser) {
 					this.navigate('#chat', {trigger: true});
@@ -339,7 +339,7 @@
 			'key=2963568336371205b3948793023157b'].join('')
 		},
 		parse: function(data) {
-			console.log(data)
+			// console.log(data)
 			data = data.results;
 
 			return data
@@ -484,7 +484,7 @@
 					// z('i.fa.fa.users'),
 					// z('div.meetsign', 'MEETUPS'),
 				each.map(function(data) {
-					console.log(data)
+					// console.log(data)
 					// debugger;
 					function check(i) {
 						if (i < 10) {
