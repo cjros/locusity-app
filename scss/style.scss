@@ -104,20 +104,29 @@
 @media screen
     and (min-width: 320px)
     and (max-width: 530px) {
+        .main {
+            height: 120% !important;
+        }
         .features {
-        & > div {
-            display: none;
+            & > div {
+                display: none;
+            }
+            & > h3 {
+                padding-top: 1em;
+            }
+            & > i {
+                padding-top: .5em;
+            }
         }
-        & > h3 {
-            padding-top: 1em;
-        }
-        & > i {
-            padding-top: .5em;
-        }
-    }
         .left-content .shift-wrapper nav {
             display: none;
-    }
+        }
+        .form-wrapper input {
+            width: 100%;
+        }
+        .meetup-detail {
+            top: 130% !important;
+        }
 }
 
 html,
