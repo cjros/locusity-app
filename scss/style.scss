@@ -38,7 +38,7 @@
     }
 }
 
-// @include gridify(2, 400);
+@include gridify(3, 800);
 @include gridify(2, 800);
 
 /**
@@ -335,30 +335,88 @@ nav {
     bottom: 0;
     margin: 0 auto;
     height: 100%;
-    width: 50%;
-    max-height: 50%;
+    width: 75%;
+    max-height: 60%;
     background-color: $mainColor;
-    color: $mainColor;
-    border: 3px solid white;
-    border-radius: 10px;
+    color: whitesmoke;
+    border: 1px solid white;
+    // border-radius: 10px;
     box-shadow: 0px 1px 10px #777;
+    overflow-y: scroll;
+    padding: .5em;
+    font-family: $secFont;
     animation: slideDown .5s ease-in-out;
-    & > .lightbox {
-        position: relative;
-        & > button {
-            position: absolute;
-            top: -1em;
-            right: -1em;
-            background-color: $mainColor;
-            border-color: white;
-            padding: .5em;
-            color: white;
-            font-family: $mainFont;
-            border-radius: 100%;
-            height: 50px;
-            width: 50px;
-        }
+}
+.lightbox a {
+    text-align: center;
+    color: white;
+    font-size: 1.25em;
+    display: block;
+    margin: 0 auto;
+    padding-top: .25em;
+}
+.box-header {
+    position: relative;
+    & > h4 {
+        font-size: 2.25em;
+        font-weight: bold;
+        text-align: center;
+        color: whitesmoke;
     }
+    & > button {
+        position: absolute;
+        font-size: 1.25em;
+        text-align: center;
+        top: 0;
+        right: 0;
+        // padding: .5em;
+        border-left-style: 1px solid white;
+        border-bottom-style: 1px solid white;
+        border: 1px solid white;
+        background-color: white;
+        color: $mainColor;       
+    }
+}
+.group-info {
+    & > img {
+        max-width: 50%;
+        border-radius: 10px;
+        // border: 1px solid white;
+        display: block;
+        margin: 0 auto;
+        padding-top: .5em
+    }
+    & > .host {
+        font-size: 1.5em;
+        font-weight: bold;
+        text-align: center;
+    }
+}
+.detailer {
+    text-align: left;
+    font-size: 1.5em;
+    padding: .25em;
+}
+.venue {
+    & > i {
+        font-size: 5em;
+        color: whitesmoke;
+        text-align: center;
+        display: block;
+        margin: 0 auto;
+        padding-top: .5em;
+    }
+    & > .venue-name,
+    .venue-addr {
+        font-size: 1.5em;
+        text-align: center;
+        font-weight: bold;
+    }
+}
+.event_desc {
+    text-align: center;
+    color: whitesmoke;
+    padding: 2em 1em;
 }
 
 .meets {
@@ -371,10 +429,12 @@ nav {
       background-color: $mainColor;
       & > .meetName {
         font-weight: bold;
-        text-decoration: underline;
+        font-family: $mainFont;
+        // text-decoration: none;
         font-size: 1.25rem;
         & > a {
             color: whitesmoke;
+            text-decoration: none;
         }
       }
     }

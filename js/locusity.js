@@ -138,9 +138,10 @@
 	                		console.log(users_here);
 	                		update.innerHTML += '<p class="anEvent">' + '<span class="bolduser">' + m.uuid+ '</span> has '  + m.action + 'ed the channel</p>';
 							$('.users').html('<span>' + m.occupancy + ' user(s)</span>');
+							document.querySelector('.userList').innerHTML += '<span class="' + m.uuid + '">' + m.uuid + '</span>';
 	                	}
 						
-						document.querySelector('.userList').innerHTML += '<span class="' + m.uuid + '">' + m.uuid + '</span>';
+						
 						// $('.userList').html('<span class="' + m.uuid + '"</span>' + m.uuid + '<br>');
 
 					}
@@ -228,7 +229,7 @@
 					this.meetupView = z(Backbone.MeetupsView, {collection: this.collection});
 					this.chatView = z(Backbone.ChatView);
 					this.shiftView = z(Backbone.ShiftContent);
-
+					$('.meetsign').show();
 					$('.meetups').show()
 					$('#map').show();
 
@@ -241,9 +242,12 @@
 					if (!this.pubnub) this.runPubNub();
 					//end of the promise check
 
-
-					this.detailView = z(Backbone.MeetupDetail, { collection: this.collection });
-					React.render(this.detailView, this.meetupDetail);
+					this.collection.get(event_id).fetch().then(function() {
+						this.detailView = z(Backbone.MeetupDetail, {model: this.collection.get(event_id)})
+						React.render(this.detailView, this.meetupDetail);
+					}.bind(this))
+					// this.detailView = z(Backbone.MeetupDetail, {model: this.collection.get(event_id)})
+					// this.detailView = z(Backbone.MeetupDetail, { collection: this.collection });
 				}.bind(this))
 			}
 			
@@ -307,69 +311,19 @@
 	});
 
 	Backbone.aMeetup = Backbone.Model.extend({
-		initialize: function(options) {
-			// console.log(options)
-			this.bind('request', this.handleRequest)
-			// if (options.group.id) {
-			// $.getJSON(
-			// 	['https://api.meetup.com/2/groups.json?callback=?&sign=true&photo-host=public&group_id=',
-			// 	options.group.id,
-			// 	'&page=10&key=2963568336371205b3948793023157b'
-			// 	].join('')
-			// )
-			// .then(function(moreData) {
-			// 	console.log(moreData)
-			// 	debugger;
-			// 	options.group = moreData.results[0] //overwriting the collection's group object with this fetch.
-			// 	// console.log(data)
-			// 	return data
-			// })
-			// } else {
-			// 	return data
-			// }
-		},
-		handleRequest: function() {
-			if (data.group.id) {
-				$.getJSON(
-					['https://api.meetup.com/2/groups.json?callback=?&sign=true&photo-host=public&group_id=',
-					data.group.id,
-					'&page=10&key=2963568336371205b3948793023157b'
-					].join('')
-				)
-				.then(function(moreData) {
-					this.handleTriggeredResponse;
-					// console.log(moreData)
-					// debugger;
-					// data.group = moreData.results[0] //overwriting the collection's group object with this fetch.
-					// // console.log(data)
-					// return data
-				})
-			} else {
-				return data
-			}
-		},
-		handleTriggeredResponse: function(response) {
-        	this.set(response.data);
-    	}
-		// parse: function(data) {
-		// 	console.log(data)
-		// 	if (data.group.id) {
-		// 		$.getJSON(
-		// 			['https://api.meetup.com/2/groups.json?callback=?&sign=true&photo-host=public&group_id=',
-		// 			data.group.id,
+		// url: function() {
+		// 		console.log(this.get('group').id)
+		// 		return ['https://api.meetup.com/2/groups.json?callback=?&sign=true&photo-host=public&group_id=',
+		// 			this.get('group').id,
 		// 			'&page=10&key=2963568336371205b3948793023157b'
 		// 			].join('')
-		// 		)
-		// 		.then(function(moreData) {
-		// 			console.log(moreData)
-		// 			debugger;
-		// 			data.group = moreData.results[0] //overwriting the collection's group object with this fetch.
-		// 			// console.log(data)
-		// 			return data
-		// 		})
-		// 	} else {
-		// 		return data
+		// 	},
+		// parse: function(data) {
+		// 	if (data.results) {
+		// 		this.set('group', data.results[0])
+		// 		return
 		// 	}
+		// 	else return data
 		// }
 	});
 
@@ -379,6 +333,7 @@
 			return ['https://api.meetup.com/2/open_events.json?callback=?&sign=true&photo-host=public&',
 			'lat='+ this.latitude,
 			'&topic=javascript,coding,ruby&',
+			'fields=group_photo&',
 			'lon='+ this.longitude,
 			'&time=,2w&radius=35&page=10&',
 			'key=2963568336371205b3948793023157b'].join('')
@@ -386,7 +341,7 @@
 		parse: function(data) {
 			console.log(data)
 			data = data.results;
-			
+
 			return data
 		}
 	});
@@ -507,7 +462,7 @@
 				]),
 				z('div.actions', [
 					z('form.textbox', {onSubmit: this._sendText}, [
-						z('input:text.sendmsg[placeholder=SEND A MSG!][maxlength=140]@chatMessage')
+						z('input:text.sendmsg[placeholder=Say Hi!][maxlength=140]@chatMessage')
 					])
 				])
 			])
@@ -517,7 +472,7 @@
 	Backbone.MeetupsView = React.createClass({
 		displayName: 'MeetupsView',
 		render: function() {
-			console.log(this.props);
+			// console.log(this.props);
 			// debugger;
 
 			// <p> content </p> = z('p', content)
@@ -530,6 +485,7 @@
 					// z('div.meetsign', 'MEETUPS'),
 				each.map(function(data) {
 					console.log(data)
+					// debugger;
 					function check(i) {
 						if (i < 10) {
 							i = '0'+ i;
@@ -549,14 +505,31 @@
 							return 'AM'
 						}
 					}
+
+					function photo_check(i) {
+						if (i) {
+							if (i.thumb_link) {
+								return i.thumb_link;
+							}
+						} else {
+							return;
+						}
+					}
 					var dT = new Date(data.get('time'))
 					var time = check(hour_check(dT.getHours())) + ':' + check(dT.getMinutes())+ ' '+ am_pm(dT.getHours());
+					var date = dT.toString()
+						.split(' ')
+						.slice(0, 4)
+						.join(' ');
+
+					// var photo = data.get('group.').group_photo;
 					return z('div.'+data.get('id'), [
 						z('div.meetName', [
 							z('a[href=#details/'+ data.get('id') + ']', {key: data.get('id')}, data.get('name'))
 						]),
-						// z('img[src='+ data.get('group').)
-						z('div.when', time),
+						// z('img[src='+ photo_check(photo) +']'),
+						z('div.when_date', 'Date: ' + date),
+						z('div.when_time', 'Time: ' + time),
 						z('div.rsvp', 'Attending: ' +data.get('yes_rsvp_count').toString() + ' ' + data.get('group').who)
 						
 						// z('div.desc', [data.get('description')]),
@@ -578,13 +551,87 @@
 			window.location.hash = '#chat';
 		},
 		render: function() {
+			var model = this.props.model,
+				photo = model.get('group'),
+				dT = new Date(model.get('time')),
+				time = check(hour_check(dT.getHours())) + ':' + check(dT.getMinutes())+ ' '+ am_pm(dT.getHours()),
+				date = dT.toString()
+					.split(' ')
+					.slice(0, 4)
+					.join(' '),
+				getDesc = model.get('description'),
+				noTags = $(getDesc).text(),
+				uniq = Math.random() * 4
+
+			function check(i) {
+				if (i < 10) {
+					i = '0'+ i;
+				}
+				return i;
+			}
+			function hour_check(i) {
+				if (i > 12) {
+					i = i - 12;
+				}
+				return i;
+			}
+			function am_pm(i) {
+				if (i > 12) {
+					return 'PM';
+				} else {
+					return 'AM'
+				}
+			}
+			//research complext custom callbacks!
+			function photo_check(i) {
+				if (i) {
+					if (i.group_photo) {
+						return z('img[src=' + i.group_photo.highres_link + ']');
+					}
+				} else {
+					return z('i.fa.fa-users')
+				}
+			}
+
+			function doesExist(i) {
+				if (i) {
+					return i;
+				} else {
+					return '';
+				}
+			}
+						
 			$('.meetup-detail').show();
 			$('.main').addClass('dim');
 			$('.main').addClass('noclicks');
-			console.log(this.props);
+			// console.log(this.props);
+			
+			//how to pass info/object/data from one react to another?
 			return z('div.lightbox', [
-				z('h4.detail-title', this.props.collection.models[0].get('name')),
-				z('button', {onClick: this._close}, 'X')
+				z('div.box-header', [
+						z('h4.b-title', model.get('name')),
+						z('button', {onClick: this._close}, 'X')
+				]),
+				z('div.box-grid.grid.grid-2-800', [
+					// z('div.detailer', [
+		   //              z('a[href=' + model.get('event_url') + ']',{key: uniq}, 'More details about event here!'),
+		   //              z('div.when_date2', {key: uniq}, 'Date: ' + date),
+		   //              z('div.when_time2', {key: uniq}, 'Time: ' + time),
+		   //              z('div.rsvp2', {key: uniq}, 'Attending: ' +model.get('yes_rsvp_count').toString() + ' ' + model.get('group').who)
+					// ]),
+					z('div.group-info', [
+						photo_check(photo),
+						z('div.host', model.get('group').name)
+					]),
+					
+					z('div.venue', [
+						z('i.fa.fa-building'),
+						z('div.venue-name', model.get('venue').name),
+						z('div.venue-addr', model.get('venue').address_1 + ' ' + model.get('venue').city + ' ' + model.get('venue').state)
+					])
+				]),
+				z('a[href=' + model.get('event_url') + ']',{key: uniq}, 'More details about event here!'),
+				z('div.event_desc', noTags)
 			])
 		}
 	})
