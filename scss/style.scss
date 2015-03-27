@@ -104,10 +104,13 @@
 @media screen
     and (min-width: 320px)
     and (max-width: 530px) {
-        html,
-        body,
-        .main {
-            height: 106% !important;
+        // html,
+        // body,
+        // .main {
+        //     height: 100vh !important;
+        // }
+        .static-wrapper {
+            font-size: .75rem;
         }
         .features {
             & > div {
@@ -120,15 +123,16 @@
                 padding-top: .5em;
             }
         }
-        .left-content .shift-wrapper nav {
+        .left-content nav {
             display: none;
         }
         .form-wrapper input {
-            width: 100%;
+            width: 90%;
+            font-size: 1.5rem !important;
         }
-        .meetup-detail {
-            top: 130% !important;
-        }
+        // .meetup-detail {
+        //     height: 100vh !important;
+        // }
 }
 
 html,
