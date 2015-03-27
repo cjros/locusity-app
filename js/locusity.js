@@ -630,8 +630,9 @@
 						z('div.venue-addr', model.get('venue').address_1 + ' ' + model.get('venue').city + ' ' + model.get('venue').state)
 					])
 				]),
-				z('a[href=' + model.get('event_url') + ']',{key: uniq}, 'More details about event here!'),
-				z('div.event_desc', noTags)
+				z('div.event_desc', noTags),
+				z('a[href=' + model.get('event_url') + ']',{key: uniq}, 'Click for more details')
+				
 			])
 		}
 	})

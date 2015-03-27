@@ -131,10 +131,27 @@
             width: 90%;
             font-size: 1.5rem !important;
         }
+
+
         // .meetup-detail {
         //     height: 100vh !important;
         // }
 }
+@media screen
+    and (min-width: 320px)
+    and (max-width: 1100px) {
+        .group-info,
+        .venue {
+            width: 100% !important;
+            margin: .25em !important;
+        }
+    }
+@media screen
+    and (max-width: 520px) {
+        .box-header h4 {
+            font-size: 3.25vh !important;
+        }
+    }
 
 html,
 body {
@@ -397,12 +414,21 @@ nav {
     animation: slideDown .5s ease-in-out;
 }
 .lightbox a {
+    width: 80%;
     text-align: center;
-    color: white;
-    font-size: 1.25em;
+    font-size: 1.1em;
     display: block;
-    margin: 0 auto;
-    padding-top: .25em;
+    margin: .75em auto;
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: center;
+    color: $mainColor;
+    font-family: $mainFont;
+    padding: .5em;
+    border: 1px solid white;
+    border-radius: 10px;
+    box-shadow: $shadow;
+    background-color: whitesmoke;
 }
 .box-header {
     position: relative;
@@ -410,23 +436,41 @@ nav {
         font-size: 2.25em;
         font-weight: bold;
         text-align: center;
-        color: whitesmoke;
+        color: $mainColor;
+        font-family: $mainFont;
+        padding: .5em;
+        border: 1px solid white;
+        border-radius: 10px;
+        box-shadow: $shadow;
+        margin: .25em 2em;
+        background-color: whitesmoke;
     }
     & > button {
         position: absolute;
         font-size: 1.25em;
         text-align: center;
+        font-weight: bold;
+        font-family: $mainFont;
         top: 0;
         right: 0;
-        // padding: .5em;
-        border-left-style: 1px solid white;
-        border-bottom-style: 1px solid white;
-        border: 1px solid white;
+        padding: 0 .25em;
+        // border-left-style: 1px solid white;
+        // border-bottom-style: 1px solid white;
+        // border: 1px solid white;
         background-color: white;
+        border-radius: 2px;
         color: $mainColor;       
     }
 }
 .group-info {
+    border: 1px solid white;
+    background-color: whitesmoke;
+    box-shadow: $shadow;
+    border-radius: 10px;
+    margin: .5em 1em;
+    padding: .5em;
+    width: 46%;
+    color: $mainColor;
     & > img {
         max-width: 50%;
         border-radius: 10px;
@@ -441,15 +485,23 @@ nav {
         text-align: center;
     }
 }
-.detailer {
-    text-align: left;
-    font-size: 1.5em;
-    padding: .25em;
-}
+// .detailer {
+//     text-align: left;
+//     font-size: 1em;
+//     padding: .25em;
+// }
 .venue {
+    border: 1px solid white;
+    background-color: whitesmoke;
+    box-shadow: $shadow;
+    border-radius: 10px;
+    margin: .5em 1em;
+    padding: .5em;
+    width: 46%;
+    color: $mainColor;
     & > i {
         font-size: 5em;
-        color: whitesmoke;
+        color: $mainColor;
         text-align: center;
         display: block;
         margin: 0 auto;
@@ -464,8 +516,15 @@ nav {
 }
 .event_desc {
     text-align: center;
-    color: whitesmoke;
+    color: $mainColor;
     padding: 2em 1em;
+    font-family: $secFont;
+    border: 1px solid white;
+    background-color: whitesmoke;
+    box-shadow: $shadow;
+    border-radius: 10px;
+    margin: .5em 1em;
+    padding: .5em;
 }
 
 .meets {
@@ -512,6 +571,7 @@ nav {
     animation: fadeOut .75s ease both;
 }
 .dim {
+    filter: grayscale(100%);
     opacity: .6;
 }
 .noclicks {
