@@ -332,11 +332,12 @@
 		url: function() {
 			return ['https://api.meetup.com/2/open_events.json?callback=?&sign=true&photo-host=public&',
 			'lat='+ this.latitude,
-			'&topic=javascript,coding,ruby&',
+			'&topic=javascript,coding,ruby,tech&',
 			'fields=group_photo&',
 			'lon='+ this.longitude,
-			'&time=,2w&radius=35&page=10&',
+			'&radius=35&page=20&',
 			'key=2963568336371205b3948793023157b'].join('')
+			/*&time=,2w*/
 		},
 		parse: function(data) {
 			// console.log(data)
@@ -483,7 +484,7 @@
 			return z('div.meets', 
 					// z('i.fa.fa.users'),
 					// z('div.meetsign', 'MEETUPS'),
-				each.map(function(data) {
+				each.map(function(data, index, arr) {
 					// console.log(data)
 					// debugger;
 					function check(i) {
@@ -553,6 +554,7 @@
 		render: function() {
 			var model = this.props.model,
 				photo = model.get('group'),
+				ven = model.get('venue'),
 				dT = new Date(model.get('time')),
 				time = check(hour_check(dT.getHours())) + ':' + check(dT.getMinutes())+ ' '+ am_pm(dT.getHours()),
 				date = dT.toString()
@@ -593,6 +595,15 @@
 				}
 			}
 
+			function hasVenue(i) {
+				if (i) {
+					return z('div.venue-name', model.get('venue').name),
+						z('div.venue-addr', model.get('venue').address_1 + ' ' + model.get('venue').city + ' ' + model.get('venue').state)
+				} else {
+					return z('div.novenue', 'Sorry, the venue is currently not available at this time!');
+				}
+			}
+
 			function doesExist(i) {
 				if (i) {
 					return i;
@@ -626,8 +637,9 @@
 					
 					z('div.venue', [
 						z('i.fa.fa-building'),
-						z('div.venue-name', model.get('venue').name),
-						z('div.venue-addr', model.get('venue').address_1 + ' ' + model.get('venue').city + ' ' + model.get('venue').state)
+						hasVenue(ven)
+						// z('div.venue-name', model.get('venue').name),
+						// z('div.venue-addr', model.get('venue').address_1 + ' ' + model.get('venue').city + ' ' + model.get('venue').state)
 					])
 				]),
 				z('div.event_desc', noTags),
